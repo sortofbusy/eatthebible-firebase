@@ -15,31 +15,29 @@ import { title, html } from './index.md';
 import { connect } from 'react-redux';
 import store from '../../core/store';
 import history from '../../core/history';
+import { AuthUI, uiConfig } from '../../core/auth';
 
-class HomePage extends React.Component {
-
-  static propTypes = {
-    articles: PropTypes.array.isRequired,
-  };
+class WelcomePage extends React.Component {
 
   componentDidMount() {
     document.title = title;
-    if(!this.props.user) history.push({ pathname: '/welcome' });
+    if(!this.props.user) AuthUI.start('#firebaseui-auth-container', uiConfig);
+  }
+
+  componentWillUnmount() {
+    AuthUI.reset();
   }
 
   render() {
     return (
       <Layout className={s.content}>
+        <h2 className={s.title}>Test</h2>
         <div dangerouslySetInnerHTML={{ __html: html }} />
-        <h4>Articles</h4>
-        <div>
-          {JSON.stringify(this.props.user)}
-        </div>
-        <p>
+        <div id="firebaseui-auth-container"></div>
           <br /><br />
-        </p>
       </Layout>
     );
+    
   }
 
 }
@@ -50,4 +48,4 @@ const mapStateToProps = function(store) {
   };
 }
 
-export default connect(mapStateToProps)(HomePage);
+export default connect(mapStateToProps)(WelcomePage);

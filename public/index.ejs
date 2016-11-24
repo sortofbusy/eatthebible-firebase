@@ -6,9 +6,23 @@
     <title><%= config.title %></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+    <script>
+      var config = {
+        apiKey: "AIzaSyBoerX3eyTV1VdJGlSVUmkqLkVnoo9ohcM",
+        authDomain: "eat-the-bible.firebaseapp.com",
+        databaseURL: "https://eat-the-bible.firebaseio.com",
+        storageBucket: "eat-the-bible.appspot.com",
+        messagingSenderId: "148229714814"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/1.0/firebase-ui-auth.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,500italic,700,700italic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link type="text/css" rel="stylesheet" href="styles.css">
   </head>
   <body>
     <div id="container"></div>

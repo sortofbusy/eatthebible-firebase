@@ -1,5 +1,9 @@
 [
   {
+    "path": "/welcome",
+    "page": "./pages/welcome"
+  },
+  {
     "path": "/",
     "page": "./pages/home",
     "chunk": "main",
@@ -14,6 +18,10 @@
   },
   {
     "path": "/about",
+    "page": "./pages/about"
+  },
+  {
+    "path": "/about/:id",
     "page": "./pages/about"
   },
   {

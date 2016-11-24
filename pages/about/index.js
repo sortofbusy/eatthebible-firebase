@@ -23,6 +23,7 @@ class AboutPage extends React.Component {
     return (
       <Layout className={s.content}>
         <h1>{title}</h1>
+        <div>{JSON.stringify(this.props)}</div>
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </Layout>
     );

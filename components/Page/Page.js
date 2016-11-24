@@ -9,7 +9,6 @@
  */
 
 import React from 'react';
-import Link from '../Link';
 import { connect } from 'react-redux';
 import store from '../../core/store';
 import history from '../../core/history';
@@ -26,14 +25,13 @@ class Navigation extends React.Component {
 
   onClick() {
     firebase.auth().signOut();
-    history.push({ pathname: '/welcome' });
   }
 
 
   render() {
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
-        <Link className="mdl-navigation__link" to="/">Home</Link>
+        <Link className="mdl-navigation__link" to="/home">Home</Link>
         <Link className="mdl-navigation__link" to="/about/56">About</Link>
         {this.props.user && <Link className="mdl-navigation__link" to="/" onClick={this.onClick}>Sign Out</Link>}
       </nav>
@@ -48,4 +46,4 @@ const mapStateToProps = function(store) {
   };
 }
 
-export default connect(mapStateToProps)(Navigation);
+export default connect(mapStateToProps)(Page);
