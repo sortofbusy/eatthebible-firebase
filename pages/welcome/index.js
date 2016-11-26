@@ -17,11 +17,14 @@ import store from '../../core/store';
 import history from '../../core/history';
 import { AuthUI, uiConfig } from '../../core/auth';
 
+require("!style!css!../../public/globals.css"); // to style the firebase-auth-ui widget
+
 class WelcomePage extends React.Component {
 
   componentDidMount() {
     document.title = title;
     if(!this.props.user) AuthUI.start('#firebaseui-auth-container', uiConfig);
+    else history.push({ pathname: '/' });
   }
 
   componentWillUnmount() {
@@ -31,9 +34,8 @@ class WelcomePage extends React.Component {
   render() {
     return (
       <Layout className={s.content}>
-        <h2 className={s.title}>Test</h2>
         <div dangerouslySetInnerHTML={{ __html: html }} />
-        <div id="firebaseui-auth-container"></div>
+        <div className={s.firebaseUiAuth} id="firebaseui-auth-container"></div>
           <br /><br />
       </Layout>
     );

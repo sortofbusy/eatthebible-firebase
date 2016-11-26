@@ -14,20 +14,5 @@
     padding: 0 16px;
   }
 
-  .firebaseui-idp-facebook, .firebaseui-idp-facebook:hover {
-      background-color: #3b5998 !important;
-  }
-
-  .mdl-button--raised {
-    background: none !important;
-  }
-
-  h2 .title {
-    color: #3b5998 !important;
-  }
-
-  :global(h2) {
-  	color: white;
-  }
-
 }
+

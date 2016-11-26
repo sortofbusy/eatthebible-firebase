@@ -16,6 +16,8 @@ import { connect } from 'react-redux';
 import store from '../../core/store';
 import history from '../../core/history';
 
+import RaisedButton from 'material-ui/RaisedButton';
+
 class HomePage extends React.Component {
 
   static propTypes = {
@@ -34,6 +36,7 @@ class HomePage extends React.Component {
         <h4>Articles</h4>
         <div>
           {JSON.stringify(this.props.user)}
+          <RaisedButton label="Default" />
         </div>
         <p>
           <br /><br />

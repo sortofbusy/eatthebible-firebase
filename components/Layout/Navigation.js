@@ -13,6 +13,7 @@ import Link from '../Link';
 import { connect } from 'react-redux';
 import store from '../../core/store';
 import history from '../../core/history';
+import s from './Navigation.css';
 
 class Navigation extends React.Component {
 
@@ -35,7 +36,9 @@ class Navigation extends React.Component {
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
         <Link className="mdl-navigation__link" to="/">Home</Link>
         <Link className="mdl-navigation__link" to="/about/56">About</Link>
-        {this.props.user && <Link className="mdl-navigation__link" to="/" onClick={this.onClick}>Sign Out</Link>}
+        {this.props.user && 
+           <Link className="mdl-navigation__link" to="/" onClick={this.onClick}>Sign Out</Link>
+        }
       </nav>
     );
   }
