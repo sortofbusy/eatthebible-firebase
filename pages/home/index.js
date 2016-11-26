@@ -31,7 +31,7 @@ class HomePage extends React.Component {
 
   render() {
     return (
-      <Layout className={s.content}>
+      <Layout className={s.content} user={this.props.user}>
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <h4>Articles</h4>
         <div>

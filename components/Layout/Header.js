@@ -9,32 +9,43 @@
  */
 
 import React from 'react';
-import Navigation from './Navigation';
-import Link from '../Link';
+import history from '../../core/history';
 import s from './Header.css';
 
+import {List, ListItem} from 'material-ui/List';
+import Avatar from 'material-ui/Avatar';
+
 class Header extends React.Component {
+  
+  state = {
+    open: false,
+  };
 
-  componentDidMount() {
-    window.componentHandler.upgradeElement(this.root);
-  }
-
-  componentWillUnmount() {
-    window.componentHandler.downgradeElements(this.root);
+  signOut() {
+    firebase.auth().signOut();
+    history.push({ pathname: '/welcome' });
   }
 
   render() {
-    return (
-      <header className={`mdl-layout__header ${s.header}`} ref={node => (this.root = node)}>
-        <div className="mdl-layout-icon"></div>
-        <div className={`mdl-layout__header-row ${s.row}`}>
-          <Link className={`mdl-layout-title ${s.title}`} to="/">
-            Eat the Bible
-          </Link>
-          <div className="mdl-layout-spacer"></div>
-          <Navigation />
-        </div>
-      </header>
+    if (!this.props.user) return null;
+    else return (
+      <div className={s.header}>
+        <List>
+          <ListItem
+            leftAvatar={<Avatar src={this.props.user.photoURL} />}
+            primaryText={this.props.user.displayName}
+            secondaryText={this.props.user.email}
+            primaryTogglesNestedList={true}
+            nestedItems={[
+              <ListItem
+                key={1}
+                primaryText="SIGN OUT"
+                onTouchTap={this.signOut}
+              />
+            ]}
+          />
+        </List>
+      </div>
     );
   }
 

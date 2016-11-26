@@ -14,40 +14,45 @@ import Header from './Header';
 import Footer from '../Footer';
 import s from './Layout.css';
 
+import AppBar from 'material-ui/AppBar';
+import Avatar from 'material-ui/Avatar';
+import Drawer from 'material-ui/Drawer';
+import MenuItem from 'material-ui/MenuItem';
+
+
 class Layout extends React.Component {
 
   static propTypes = {
     className: PropTypes.string,
+    user: PropTypes.object
   };
 
-  componentDidMount() {
-    window.componentHandler.upgradeElement(this.root);
+  constructor(props) {
+    super(props);
+    const divProps = Object.assign({}, props);
+    delete divProps.user;
+    this.state = {open: false, divProps: divProps};
   }
 
-  componentWillUnmount() {
-    window.componentHandler.downgradeElements(this.root);
-  }
+  handleToggle = () => this.setState({open: !this.state.open});
 
   render() {
     return (
-      <div className="mdl-layout mdl-js-layout" ref={node => (this.root = node)}>
-        <div className="mdl-layout__inner-container">
-          <Header />
-          <div class="mdl-layout__drawer">
-              <span class="mdl-layout__title">Material Design Lite</span>
-              <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="#">Hello</a>
-                <a class="mdl-navigation__link" href="#">World.</a>
-                <a class="mdl-navigation__link" href="#">How</a>
-                <a class="mdl-navigation__link" href="#">Are</a>
-                <a class="mdl-navigation__link" href="#">You?</a>
-              </nav>
-            </div>
-          <main className="mdl-layout__content">
-            <div {...this.props} className={cx(s.content, this.props.className)} />
-            <Footer />
-          </main>
-        </div>
+      <div>
+        <AppBar
+          title="Eat the Bible"
+          onLeftIconButtonTouchTap={this.handleToggle}
+        />
+        <Drawer
+          docked={false}
+          width={280}
+          open={this.state.open}
+          onRequestChange={(open) => this.setState({open})}
+        >
+          <Header user={this.props.user}/>
+        </Drawer>
+        <div {...this.state.divProps} className={cx(s.content, this.props.className)} />
+        <Footer />
       </div>
     );
   }
