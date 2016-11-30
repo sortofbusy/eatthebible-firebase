@@ -20,7 +20,7 @@ const config = {
   title: 'Eat the Bible',        // Your website title
   url: 'https://app.eatthebible.com',          // Your website URL
   project: 'eat-the-bible',      // Firebase project. See README.md -> How to Deploy
-  trackingID: 'UA-XXXXX-Y',                 // Google Analytics Site's ID
+  trackingID: null,                 // Google Analytics Site's ID
 };
 
 const tasks = new Map(); // The collection of automation tasks ('clean', 'build', 'publish', etc.)

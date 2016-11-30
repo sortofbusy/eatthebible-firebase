@@ -20,6 +20,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 class HomePage extends React.Component {
 
+  static propTypes = {
+    articles: PropTypes.array.isRequired,
+  };
+
   plans = [
     {
       id: 12345,
@@ -33,12 +37,12 @@ class HomePage extends React.Component {
 
   componentDidMount() {
     //document.title = config.title;
-    //if(!this.props.user) history.push({ pathname: '/welcome' });
+    if(!this.props.user) history.push({ pathname: '/welcome' });
   }
 
   render() {
     return (
-      <Layout className={s.content}>
+      <Layout className={s.content} user={this.props.user} plans = {this.plans}>
         <div dangerouslySetInnerHTML={{ __html: html }} />
         <h4>Articles</h4>
         <div>

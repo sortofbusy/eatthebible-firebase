@@ -13,25 +13,27 @@ import cx from 'classnames';
 import Header from './Header';
 import Footer from '../Footer';
 import s from './Layout.css';
+import history from '../../core/history';
 
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
+import Divider from 'material-ui/Divider';
 import Drawer from 'material-ui/Drawer';
+import {List, ListItem} from 'material-ui/List';
 import MenuItem from 'material-ui/MenuItem';
-
+import ActionToday from 'material-ui/svg-icons/action/today';
+import ActionSettings from 'material-ui/svg-icons/action/settings';
+import CommunicationChat from 'material-ui/svg-icons/communication/chat';
 
 class Layout extends React.Component {
 
   static propTypes = {
-    className: PropTypes.string,
-    user: PropTypes.object
+    className: PropTypes.string
   };
 
   constructor(props) {
     super(props);
-    const divProps = Object.assign({}, props);
-    delete divProps.user;
-    this.state = {open: false, divProps: divProps};
+    this.state = {open: false};
   }
 
   handleToggle = () => this.setState({open: !this.state.open});
@@ -40,18 +42,38 @@ class Layout extends React.Component {
     return (
       <div>
         <AppBar
-          title="Eat the Bible"
+          title={<span style={{cursor: 'pointer'}}>Eat the Bible</span>}
+          onTitleTouchTap={() => history.push({ pathname: '/' })}
           onLeftIconButtonTouchTap={this.handleToggle}
         />
-        <Drawer
-          docked={false}
-          width={280}
-          open={this.state.open}
-          onRequestChange={(open) => this.setState({open})}
-        >
-          <Header user={this.props.user}/>
-        </Drawer>
-        <div {...this.state.divProps} className={cx(s.content, this.props.className)} />
+        {firebase.auth().currentUser && 
+          <Drawer
+            docked={false}
+            width={250}
+            open={this.state.open}
+            onRequestChange={(open) => this.setState({open})}
+          >
+            <Header/>
+            <Divider />
+            <List>
+              <ListItem
+                leftIcon={<ActionToday/>}
+                primaryText="Plans"
+                onTouchTap={() => history.push({ pathname: '/plans' })}
+              />
+              <ListItem
+                leftIcon={<CommunicationChat/>}
+                primaryText="Notes"
+                onTouchTap={() => history.push({ pathname: '/notes' })}
+              />
+              <ListItem
+                leftIcon={<ActionSettings/>}
+                primaryText="Settings"
+                onTouchTap={() => history.push({ pathname: '/settings' })}
+              />
+            </List>
+          </Drawer>}
+          <div {...this.props} className={cx(s.content, this.props.className)} />
         <Footer />
       </div>
     );

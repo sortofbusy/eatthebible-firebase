@@ -8,6 +8,18 @@ exports.uiConfig = {
   'callbacks': {
     // Called when the user has been successfully signed in.
     'signInSuccess': function(user, credential, redirectUrl) {
+      let userId = user.uid;
+      firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
+        if (snapshot.val() === null) {
+          firebase.database().ref('/users/' + userId).set({
+            name: user.displayName,
+            email: user.email,
+            photoUrl: user.photoURL
+          });
+        }
+        // ...
+      });
+
       history.push({ pathname: '/' });
       // Do not redirect.
       return false;
@@ -36,7 +48,6 @@ exports.AuthUI = new firebaseui.auth.AuthUI(firebase.auth());
 
 exports.initFirebase = () => {
   let currentUser = firebase.auth().currentUser;
-  //console.log(currentUser);
   if (currentUser) {
   	store.dispatch({
 	  	type: 'USER',

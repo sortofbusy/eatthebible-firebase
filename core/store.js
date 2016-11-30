@@ -19,6 +19,8 @@ const store = createStore((state, action) => {
   switch (action.type) {
     case 'USER':
       return Object.assign({}, state, { user: action.user });
+    case 'PLANS':
+      return Object.assign({}, state, { plans: action.plans });
     default:
       return state;
   }

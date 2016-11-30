@@ -19,6 +19,7 @@ class Header extends React.Component {
   
   state = {
     open: false,
+    user: firebase.auth().currentUser
   };
 
   signOut() {
@@ -27,14 +28,14 @@ class Header extends React.Component {
   }
 
   render() {
-    if (!this.props.user) return null;
+    if (!this.state.user) return null;
     else return (
       <div className={s.header}>
-        <List>
+        <img className={s.image} src={this.state.user.photoURL} height="90" width="90"/>
+        <List>  
           <ListItem
-            leftAvatar={<Avatar src={this.props.user.photoURL} />}
-            primaryText={this.props.user.displayName}
-            secondaryText={this.props.user.email}
+            primaryText={this.state.user.displayName}
+            secondaryText={this.state.user.email}
             primaryTogglesNestedList={true}
             nestedItems={[
               <ListItem

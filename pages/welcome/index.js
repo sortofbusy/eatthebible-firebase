@@ -22,7 +22,6 @@ require("!style!css!../../public/globals.css"); // to style the firebase-auth-ui
 class WelcomePage extends React.Component {
 
   componentDidMount() {
-    document.title = title;
     if(!this.props.user) AuthUI.start('#firebaseui-auth-container', uiConfig);
     else history.push({ pathname: '/' });
   }

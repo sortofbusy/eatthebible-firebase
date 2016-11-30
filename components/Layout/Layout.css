@@ -12,4 +12,6 @@
   margin: 0 auto;
   max-width: 1000px;
   width: 100%;
+  overflow-wrap: break-word;
+  margin-bottom: 32px;
 }

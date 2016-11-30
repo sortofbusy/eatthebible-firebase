@@ -21,8 +21,20 @@
     "page": "./pages/about"
   },
   {
-    "path": "/about/:id",
+    "path": "/about/new",
     "page": "./pages/about"
+  },
+  {
+    "path": "/plans/",
+    "page": "./pages/plans"
+  },
+  {
+    "path": "/plans/new",
+    "page": "./pages/plans/new"
+  },
+  {
+    "path": "/settings",
+    "page": "./pages/settings"
   },
   {
     "path": "/tasks/:status(pending|completed)?",
