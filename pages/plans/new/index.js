@@ -11,7 +11,6 @@
 import React, { PropTypes } from 'react';
 import Layout from '../../../components/Layout';
 import s from './styles.css';
-import { title, html } from './index.md';
 import { connect } from 'react-redux';
 import store from '../../../core/store';
 import history from '../../../core/history';
@@ -22,13 +21,14 @@ import TextField from 'material-ui/TextField';
 import Slider from 'material-ui/Slider';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import Snackbar from 'material-ui/Snackbar';
 
 class PlansNewPage extends React.Component {
   
   constructor(props) {
     super(props);
     this.state = { 
-      loading: true, 
+      open: false, 
       plan: {
         name: '',
         pace: 1
@@ -39,8 +39,11 @@ class PlansNewPage extends React.Component {
       endBook: null,
       endChapter: null,
       finishDate: null,
-      translationLanguage: 'English',
-      translationVersion: 'asv'
+      version: { 
+        language: 'English', 
+        name: 'American Standard Version', 
+        code: 'asv'
+      }
     };
   }
 
@@ -127,9 +130,20 @@ class PlansNewPage extends React.Component {
       if (a.language === value) versionItems.push(<MenuItem key={index} value={a.code} primaryText={a.name} />);
     });
     this.setState({
-      translationLanguage: value,      
+      version: Object.assign({}, {language: value, code: this.state.version.code, name: this.state.version.name}),      
       versionItems: versionItems
     });
+  }
+
+  handleVersion = (event, index, value) => {
+    this.setState({
+      version: Object.assign({}, {language: this.state.version.language, code: value, name: event.target.innerHTML})
+    });
+  }
+
+  closeSnackbar = () => {
+    this.setState({open: false});
+    history.push({ pathname: '/plans' });
   }
 
   handleSubmit = () => {
@@ -145,13 +159,13 @@ class PlansNewPage extends React.Component {
       startChapter: chapterIdFromBookNumAndChapterNum(this.state.startBook, this.state.startChapter),
       endChapter: chapterIdFromBookNumAndChapterNum(this.state.endBook, this.state.endChapter),
       cursor: chapterIdFromName(startReference),
-      code: this.state.translationVersion,
+      version: this.state.version,
       pace: this.state.plan.pace
     });
-
+    this.setState({
+      open: true
+    });
     
-
-    history.push({ pathname: '/plans ' })
   }
 
   render() {
@@ -167,7 +181,7 @@ class PlansNewPage extends React.Component {
           /><br />
           <SelectField
             floatingLabelText="Language to Read"
-            value={this.state.translationLanguage}
+            value={this.state.version.language}
             onChange={this.handleLanguage}
             maxHeight={250}
           >
@@ -175,8 +189,8 @@ class PlansNewPage extends React.Component {
           </SelectField> <br />
           <SelectField
             floatingLabelText="Version to Read"
-            value={this.state.translationVersion}
-            onChange={(event, index, value) => this.setState({translationVersion: value})}
+            value={this.state.version.code}
+            onChange={this.handleVersion}
             maxHeight={250}
           >
             {this.state.versionItems || englishVersions}
@@ -229,6 +243,12 @@ class PlansNewPage extends React.Component {
         <p>
           <br /><br />
         </p>
+        <Snackbar
+          open={this.state.open}
+          message="Plan Created"
+          autoHideDuration={3000}
+          onRequestClose={this.closeSnackbar}
+        />
       </Layout>
     );
   }

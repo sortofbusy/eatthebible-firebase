@@ -1,7 +1,7 @@
 import React from 'react';
 import store from './store';
 import history from './history';
-
+import {firebaseListen}  from './firebaseListeners';
 
 // FirebaseUI config.
 exports.uiConfig = {
@@ -47,19 +47,13 @@ exports.uiConfig = {
 exports.AuthUI = new firebaseui.auth.AuthUI(firebase.auth());
 
 exports.initFirebase = () => {
-  let currentUser = firebase.auth().currentUser;
-  if (currentUser) {
-  	store.dispatch({
-	  	type: 'USER',
-	  	user: currentUser
-	});
-  }
 
   firebase.auth().onAuthStateChanged(function(user) {
 		store.dispatch({
 		  	type: 'USER',
 		  	user: user
 		});
+    firebaseListen(user);
 	}, function(error) {
 		console.log(error);
 	});

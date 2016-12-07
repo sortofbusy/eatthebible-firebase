@@ -211,6 +211,24 @@ exports.chapterIdFromName = function(chapterName) {
 	return null;
 };
 
+exports.bookIdFromChapterId = function(chapterId) {
+    var chapters = 0;
+    for (var i = 0; i < exports.books.length; i++) {
+        chapters += exports.books[i].chapters.length;
+        if (chapterId < chapters) return i;
+    }
+    return null;
+};
+
+exports.chapterNumFromChapterId = function(chapterId) {
+    var chapters = 0;
+    for (var i = 0; i < exports.books.length; i++) {
+        chapters += exports.books[i].chapters.length;
+        if (chapterId < chapters) return exports.books[i].chapters.length - (chapters - chapterId);
+    }
+    return null;
+};
+
 exports.chapterIdFromBookNumAndChapterNum = function(bookNum, chapterNum) {
 	if(bookNum < 0 || bookNum > 65) return null;
 	var chapters = 0;

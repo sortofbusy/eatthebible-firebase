@@ -27,7 +27,6 @@ import store from './core/store';
 import router from './core/router';
 import history from './core/history';
 import {initFirebase}  from './core/auth';
-import {firebaseListen}  from './core/firebaseListeners';
 
 let routes = require('./routes.json'); // Loaded with utils/routes-loader.js
 const container = document.getElementById('container');
@@ -86,6 +85,5 @@ if (module.hot) {
   });
 }
 
-//init Firebase Auth
+//init Firebase Auth AND Firebase listeners
 window.addEventListener('load', initFirebase);
-window.addEventListener('load', firebaseListen);
