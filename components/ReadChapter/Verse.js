@@ -8,9 +8,16 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-.content {
-  margin: 0 auto;
-  max-width: 1000px;
-  overflow-wrap: break-word;
-  margin-bottom: 32px;
+import React from 'react';
+import cx from 'classnames';
+
+class Verse extends React.Component {
+
+  render() {
+    if (!this.props.verse) return null;
+    return <div key={this.props.verse.verse_nr}><sup>{this.props.verse.verse_nr}</sup> {this.props.verse.verse}</div>;
+  }
+
 }
+
+export default Verse;

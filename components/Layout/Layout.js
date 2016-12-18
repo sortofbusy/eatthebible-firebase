@@ -25,6 +25,8 @@ import ActionToday from 'material-ui/svg-icons/action/today';
 import ActionSettings from 'material-ui/svg-icons/action/settings';
 import CommunicationChat from 'material-ui/svg-icons/communication/chat';
 
+require("!style!css!../../public/globals.css"); // to style the firebase-auth-ui widget
+
 class Layout extends React.Component {
 
   static propTypes = {

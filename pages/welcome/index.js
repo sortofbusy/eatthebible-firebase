@@ -17,8 +17,6 @@ import store from '../../core/store';
 import history from '../../core/history';
 import { AuthUI, uiConfig } from '../../core/auth';
 
-require("!style!css!../../public/globals.css"); // to style the firebase-auth-ui widget
-
 class WelcomePage extends React.Component {
 
   componentDidMount() {

@@ -49,7 +49,9 @@ class PlansPage extends React.Component {
 
   createPlan(index) {
     for (var i = 0; i < defaultPlans[index].plans.length; i++) {
-      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans').push(defaultPlans[index].plans[i]);
+      let plan = defaultPlans[index].plans[i];
+      plan.version = { language: 'English', name: 'American Standard Version', code: 'asv'}; // TODO: change to user default
+      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans').push(plan);
     }
     this.setState({
       snackbarOpen: true,
