@@ -11,8 +11,12 @@
 import React, { PropTypes } from 'react';
 import fetchJsonp from 'fetch-jsonp';
 import s from './ReadChapter.css';
+import store from '../../core/store';
+
 import Verse from './Verse';
 import {chapterNameFromId} from '../../core/bibleRef';
+
+import Badge from 'material-ui/Badge';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -26,27 +30,46 @@ class ReadChapter extends React.Component {
   }
 
   componentDidMount() {
-    this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(this.props.chapter))}&v=${this.props.versionCode}`);
+    this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(this.props.plan.cursor))}&v=${this.props.plan.version.code}`);
   }
 
   componentDidUpdate() {
-    this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(this.props.chapter))}&v=${this.props.versionCode}`);
+    scroll(0,0);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps && this.props && nextProps.plan.cursor !== this.props.plan.cursor)
+      this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(nextProps.plan.cursor))}&v=${nextProps.plan.version.code}`);
   }
 
   httpGetAsync(theUrl)
   {
+    store.dispatch({
+      type: 'TOGGLE_ISLOADING',
+      isLoading: true
+    });
     fetchJsonp(theUrl)
       .then((response) => {
         return response.json()
       }).then((json) => {
-        this.setState({verses: json.chapter});
+        store.dispatch({
+            type: 'TOGGLE_ISLOADING',
+            isLoading: false,
+            verses: json.chapter
+        });
+        return;
       }).catch((ex) => {
-        this.setState({errorMsg: ex});
+        store.dispatch({
+            type: 'TOGGLE_ISLOADING',
+            isLoading: false,
+            errorMsg: 'Error: ' + ex
+        });
+        return;
       });
   }
 
   render() {
-    if (!this.state.verses && !this.state.errorMsg) {
+    if (this.props.isLoading) {
       return (
         <div style={{textAlign: 'center'}}>
           <RefreshIndicator
@@ -59,13 +82,16 @@ class ReadChapter extends React.Component {
         </div>
       );
     }
-    if (!this.state.verses && this.state.errorMsg) {
-      return <div>{'Chapter didn\'t load: ' + JSON.stringify(this.state.errorMsg)}</div>;
+    else if (this.props.errorMsg) {
+      return <RaisedButton 
+                label="RELOAD" 
+                onTouchTap={() => this.httpGetAsync('https://getbible.net/json?scripture='+encodeURIComponent(chapterNameFromId(this.props.plan.cursor))+'&v='+this.props.plan.version.code)}
+                style={{marginTop: 60}} />
     }
-    return (
+    else return (
       <div>
-        <h2>{chapterNameFromId(this.props.chapter)}</h2>
-        <div>{Object.values(this.state.verses).map((v) => <Verse key={v.verse_nr} verse={v} /> )}</div>
+        <h2>{chapterNameFromId(this.props.plan.cursor)} <Badge badgeContent={this.props.plan.chaptersToday || 0} secondary={true}/></h2>
+        <div>{this.props.verses && Object.values(this.props.verses).map((v) => <Verse key={v.verse_nr} verse={v} /> )}</div>
         <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
       </div>
     );

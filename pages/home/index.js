@@ -16,6 +16,7 @@ import { title, html } from './index.md';
 import { connect } from 'react-redux';
 import store from '../../core/store';
 import history from '../../core/history';
+import { dateIsToday, initializePlans, incrementPlan } from '../../core/planLogic';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
@@ -30,13 +31,8 @@ class HomePage extends React.Component {
     }
   }
 
-  componentDidMount() {
-    //document.title = config.title;
-    //if(!this.props.user) history.push({ pathname: '/welcome' });
-  }
-
-  componentDidUpdate() {
-    scroll(0,0);
+  componentWillReceiveProps() {
+    initializePlans(this.props.plans, this.props.currentPlanId);
   }
 
   closeSnackbar = () => {
@@ -44,26 +40,20 @@ class HomePage extends React.Component {
   }
 
   nextChapter() {
-    let plan = this.props.plans[this.props.currentPlanId];
-    if (plan.cursor + 1 > plan.endChapter) {
-      this.setState({open: true});
-      return;
-    }
-    let newCursor = plan.cursor + 1;
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans/' + this.props.currentPlanId).update({
-      cursor: newCursor
-    });
+    incrementPlan(this.props.plans, this.props.currentPlanId);
   }
 
   render() {
     return (
       <Layout className={s.content}>
         <div>
-          {this.props.currentPlanId && <ReadChapter 
-                                chapter={this.props.plans[this.props.currentPlanId].cursor} 
-                                versionCode={this.props.plans[this.props.currentPlanId].version.code || 'asv'} 
+          {this.props.plans && this.props.currentPlanId && <ReadChapter 
+                                plan={this.props.plans[this.props.currentPlanId]} 
+                                isLoading={this.props.isLoading}
+                                errorMsg={this.props.errorMsg}
+                                verses={this.props.verses} 
                                 nextChapterCB={this.nextChapter.bind(this)}/>}
-          {!this.props.currentPlanId && <RaisedButton 
+          {!this.props.plans && <RaisedButton 
                                 label="CHOOSE A PLAN" 
                                 onTouchTap={() => history.push({pathname: '/plans'})}
                                 style={{marginTop: 60}} />}
@@ -84,12 +74,13 @@ class HomePage extends React.Component {
 }
 
 const mapStateToProps = function(store) {
-  let currentPlanId = null;
-  if (store.plans) currentPlanId = Object.keys(store.plans)[0];
   return {
     user: store.user,
     plans: store.plans,
-    currentPlanId: currentPlanId
+    isLoading: store.isLoading,
+    verses: store.verses,
+    errorMsg: store.errorMsg,
+    currentPlanId: store.currentPlanId
   };
 }
 
