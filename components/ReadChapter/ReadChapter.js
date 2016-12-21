@@ -90,7 +90,7 @@ class ReadChapter extends React.Component {
     }
     else return (
       <div>
-        <h2>{chapterNameFromId(this.props.plan.cursor)} <Badge badgeContent={this.props.plan.chaptersToday || 0} secondary={true}/></h2>
+        <h2>{chapterNameFromId(this.props.plan.cursor)}</h2>
         <div>{this.props.verses && Object.values(this.props.verses).map((v) => <Verse key={v.verse_nr} verse={v} /> )}</div>
         <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
       </div>

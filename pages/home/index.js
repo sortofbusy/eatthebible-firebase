@@ -11,6 +11,7 @@
 import React, { PropTypes } from 'react';
 import Layout from '../../components/Layout';
 import ReadChapter from '../../components/ReadChapter';
+import PlanSelect from '../../components/ReadChapter/PlanSelect';
 import s from './styles.css';
 import { title, html } from './index.md';
 import { connect } from 'react-redux';
@@ -31,7 +32,13 @@ class HomePage extends React.Component {
     }
   }
 
+  componentWillMount() {
+    console.log('mounting');
+    initializePlans(this.props.plans, this.props.currentPlanId);
+  }
+  
   componentWillReceiveProps() {
+    console.log('initializing');
     initializePlans(this.props.plans, this.props.currentPlanId);
   }
 
@@ -47,12 +54,17 @@ class HomePage extends React.Component {
     return (
       <Layout className={s.content}>
         <div>
-          {this.props.plans && this.props.currentPlanId && <ReadChapter 
-                                plan={this.props.plans[this.props.currentPlanId]} 
-                                isLoading={this.props.isLoading}
-                                errorMsg={this.props.errorMsg}
-                                verses={this.props.verses} 
-                                nextChapterCB={this.nextChapter.bind(this)}/>}
+          {this.props.plans && this.props.currentPlanId && <div>
+              <PlanSelect
+                plans={this.props.plans}
+                currentPlanId={this.props.currentPlanId} />
+              <ReadChapter 
+                plan={this.props.plans[this.props.currentPlanId]} 
+                isLoading={this.props.isLoading}
+                errorMsg={this.props.errorMsg}
+                verses={this.props.verses} 
+                nextChapterCB={this.nextChapter.bind(this)}/>
+          </div>}
           {!this.props.plans && <RaisedButton 
                                 label="CHOOSE A PLAN" 
                                 onTouchTap={() => history.push({pathname: '/plans'})}

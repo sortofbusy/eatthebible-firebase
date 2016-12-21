@@ -51,7 +51,10 @@ class PlansPage extends React.Component {
     for (var i = 0; i < defaultPlans[index].plans.length; i++) {
       let plan = defaultPlans[index].plans[i];
       plan.version = { language: 'English', name: 'American Standard Version', code: 'asv'}; // TODO: change to user default
-      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans').push(plan);
+      let newPlan = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans').push(plan).key;
+      if (!this.props.currentPlanId) firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+          currentPlanId: newPlan
+        });
     }
     this.setState({
       snackbarOpen: true,
@@ -61,6 +64,21 @@ class PlansPage extends React.Component {
 
   handleDialog = (ignore, doIt = false) => {
     if (doIt) {
+        // if the plan to delete is the current plan being read, replace currentPlanId
+      if (this.props.currentPlanId === this.state.toDelete) {
+        let keys = Object.keys(this.props.plans);
+        let newCurrentPlanId = '';
+        for (var i = 0; i < keys.length; i++) {
+          if (keys[i] !== this.state.toDelete) {
+            newCurrentPlanId = keys[i]; 
+            break;
+          }
+        }
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+          currentPlanId: newCurrentPlanId
+        });
+      }
+
       firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans/' + this.state.toDelete).remove(); 
       this.setState({
         snackbarOpen: true,
@@ -212,7 +230,8 @@ const styles = {
 
 const mapStateToProps = function(store) {
   return {
-    plans: store.plans
+    plans: store.plans,
+    currentPlanId: store.currentPlanId
   };
 }
 
