@@ -9,7 +9,11 @@
  */
 
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 import store from '../../core/store';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+
+import { dateIsToday } from '../../core/planLogic';
 
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
@@ -24,14 +28,38 @@ class PlanSelect extends React.Component {
   }
 
   render() {
+    let chapterCount = {};
+    
+    if (this.props.plans) {
+      let planKeys = Object.keys(this.props.plans);
+
+      for (let i = 0; i < planKeys.length; i++) {
+        chapterCount[planKeys[i]] = (!this.props.plans[planKeys[i]].latestTimestamp 
+          || !dateIsToday(this.props.plans[planKeys[i]].latestTimestamp)) ? 0 : this.props.plans[planKeys[i]].chaptersToday;
+      }
+    }
+
     return (
-      <div style={styles.wrapper}><Paper style={styles.paper}>
+      <div style={styles.wrapper}><Paper style={{...styles.paper,...{backgroundColor: this.props.backgroundColor}}}>
         {Object.keys(this.props.plans).map((key) => {
           let plan = this.props.plans[key];
+          let avatarColor = '';
+          let chipColor = '';
+          let textColor = '#444';
           
+          if (chapterCount[key] >= plan.pace) {
+            avatarColor = this.props.muiTheme.palette.accent2Color;
+            chipColor = this.props.muiTheme.palette.accent3Color;
+            textColor = '';
+          }
+          if (key === this.props.currentPlanId) {
+            avatarColor = this.props.muiTheme.palette.primary1Color;
+            chipColor = this.props.muiTheme.palette.primary3Color;
+            textColor = '';
+          }
           return(
-          <Chip style={styles.chip} onTouchTap={this.selectPlan.bind(this, key)} key={key}>
-            <Avatar backgroundColor={(key === this.props.currentPlanId ? '#ffb300' : '')} color={(key === this.props.currentPlanId ? '' : '#444')}>{(plan.chaptersToday || '0') + '/' + plan.pace}</Avatar>
+          <Chip style={styles.chip} backgroundColor={chipColor} labelColor={textColor} onTouchTap={this.selectPlan.bind(this, key)} key={key}>
+            <Avatar backgroundColor={avatarColor} color={textColor}>{chapterCount[key] + '/' + plan.pace}</Avatar>
             {plan.name}
           </Chip> )} ) 
         }
@@ -59,4 +87,14 @@ const styles = {
   }
 };
 
-export default PlanSelect;
+const mapStateToProps = function(store) {
+  let backgroundColor = '';
+  if (store.settings && store.settings.colorScheme === 'sepia') backgroundColor = '#FBF0D9';
+  return {
+    plans: store.plans,
+    currentPlanId: store.currentPlanId,
+    backgroundColor: backgroundColor
+  };
+}
+
+export default connect(mapStateToProps)(muiThemeable()(PlanSelect));

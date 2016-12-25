@@ -14,6 +14,7 @@ import Header from './Header';
 import Footer from '../Footer';
 import s from './Layout.css';
 import history from '../../core/history';
+import { connect } from 'react-redux';
 
 import AppBar from 'material-ui/AppBar';
 import Avatar from 'material-ui/Avatar';
@@ -35,14 +36,32 @@ class Layout extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {open: false};
+    this.state = {
+      open: false,
+    };
   }
 
   handleToggle = () => this.setState({open: !this.state.open});
 
   render() {
+    let settingsStyle = {};
+
+    if (this.props.settings) {
+      let backgroundColor = '';
+      let color = '';
+      if (this.props.settings.colorScheme === 'sepia') {
+        backgroundColor = '#FBF0D9';
+        color = '#5F4B32';
+      }
+      settingsStyle = {
+        backgroundColor: backgroundColor,
+        color: color
+      };
+    }
+    settingsStyle['flex'] = '1';
+    
     return (
-      <div>
+      <div style={settingsStyle}>
         <AppBar
           title={<span style={{cursor: 'pointer'}}>Eat the Bible</span>}
           onTitleTouchTap={() => history.push({ pathname: '/' })}
@@ -75,11 +94,16 @@ class Layout extends React.Component {
               />
             </List>
           </Drawer>}
-          <div {...this.props} className={cx(s.content, this.props.className)} />
-        <Footer />
+          <div children={this.props.children} className={cx(s.content, this.props.className)} />
       </div>
     );
   }
 }
 
-export default Layout;
+const mapStateToProps = function(store) {
+  return {
+    settings: store.settings
+  };
+}
+
+export default connect(mapStateToProps)(Layout);

@@ -11,6 +11,7 @@
 .content {
   margin: 0 auto;
   max-width: 1000px;
-  overflow-wrap: break-word;
-  margin-bottom: 32px;
+  /*overflow-wrap: break-word;*/
+  min-height: 600px;
+  padding-bottom: 32px;
 }

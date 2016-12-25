@@ -30,7 +30,7 @@ class ReadChapter extends React.Component {
   }
 
   componentDidMount() {
-    this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(this.props.plan.cursor))}&v=${this.props.plan.version.code}`);
+    this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(this.props.plan.cursor))}&v=${(this.props.plan.version) ? this.props.plan.version.code : this.props.versionCode}`);
   }
 
   componentDidUpdate() {
@@ -39,7 +39,7 @@ class ReadChapter extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && this.props && nextProps.plan.cursor !== this.props.plan.cursor)
-      this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(nextProps.plan.cursor))}&v=${nextProps.plan.version.code}`);
+      this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(nextProps.plan.cursor))}&v=${(nextProps.plan.version) ? nextProps.plan.version.code : this.props.versionCode}`);
   }
 
   httpGetAsync(theUrl)
@@ -85,11 +85,11 @@ class ReadChapter extends React.Component {
     else if (this.props.errorMsg) {
       return <RaisedButton 
                 label="RELOAD" 
-                onTouchTap={() => this.httpGetAsync('https://getbible.net/json?scripture='+encodeURIComponent(chapterNameFromId(this.props.plan.cursor))+'&v='+this.props.plan.version.code)}
+                onTouchTap={() => this.httpGetAsync('https://getbible.net/json?scripture='+encodeURIComponent(chapterNameFromId(this.props.plan.cursor))+'&v='+((this.props.plan.version) ? this.props.plan.version.code : this.props.versionCode))}
                 style={{marginTop: 60}} />
     }
     else return (
-      <div>
+      <div style={{fontSize: this.props.textSize * 100 + '%'}}>
         <h2>{chapterNameFromId(this.props.plan.cursor)}</h2>
         <div>{this.props.verses && Object.values(this.props.verses).map((v) => <Verse key={v.verse_nr} verse={v} /> )}</div>
         <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>

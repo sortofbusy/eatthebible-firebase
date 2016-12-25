@@ -16,7 +16,7 @@ import ReactDOM from 'react-dom';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {amber500, amber600, amber700, brown500} from 'material-ui/styles/colors';
+import {amber600, amber400, amber200, brown500, brown300, brown100} from 'material-ui/styles/colors';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
@@ -34,11 +34,11 @@ const container = document.getElementById('container');
 const muiTheme = getMuiTheme({
   palette: {
     primary1Color: amber600,
-    primary2Color: amber700,
-    primary3Color: amber500,
+    primary2Color: amber400,
+    primary3Color: amber200,
     accent1Color: brown500,
-    accent2Color: brown500,
-    accent3Color: brown500,
+    accent2Color: brown300,
+    accent3Color: brown100,
   },
   appBar: {
     height: 50,

@@ -11,10 +11,16 @@ exports.uiConfig = {
       let userId = user.uid;
       firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
         if (snapshot.val() === null) {
-          firebase.database().ref('/users/' + userId).set({
+          firebase.database().ref('/users/' + userId).update({
             name: user.displayName,
             email: user.email,
-            photoUrl: user.photoURL
+            photoUrl: user.photoURL,
+            settings: {
+              version: { language: 'English', name: 'American Standard Version', code: 'asv'},
+              textSize: 1,
+              notifications: false,
+              colorScheme: 'normal'
+            }
           });
         }
         // ...

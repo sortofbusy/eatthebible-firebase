@@ -32,14 +32,8 @@ class HomePage extends React.Component {
     }
   }
 
-  componentWillMount() {
-    console.log('mounting');
-    initializePlans(this.props.plans, this.props.currentPlanId);
-  }
-  
-  componentWillReceiveProps() {
-    console.log('initializing');
-    initializePlans(this.props.plans, this.props.currentPlanId);
+  componentDidMount() {
+    //initializePlans(this.props.plans, this.props.currentPlanId);
   }
 
   closeSnackbar = () => {
@@ -55,15 +49,15 @@ class HomePage extends React.Component {
       <Layout className={s.content}>
         <div>
           {this.props.plans && this.props.currentPlanId && <div>
-              <PlanSelect
-                plans={this.props.plans}
-                currentPlanId={this.props.currentPlanId} />
+              <PlanSelect />
               <ReadChapter 
                 plan={this.props.plans[this.props.currentPlanId]} 
                 isLoading={this.props.isLoading}
                 errorMsg={this.props.errorMsg}
                 verses={this.props.verses} 
-                nextChapterCB={this.nextChapter.bind(this)}/>
+                nextChapterCB={this.nextChapter.bind(this)}
+                textSize={this.props.settings.textSize}
+                versionCode={this.props.settings.version.code}/>
           </div>}
           {!this.props.plans && <RaisedButton 
                                 label="CHOOSE A PLAN" 
@@ -92,7 +86,8 @@ const mapStateToProps = function(store) {
     isLoading: store.isLoading,
     verses: store.verses,
     errorMsg: store.errorMsg,
-    currentPlanId: store.currentPlanId
+    currentPlanId: store.currentPlanId,
+    settings: store.settings
   };
 }
 
