@@ -28,8 +28,9 @@ class PlansEditPage extends React.Component {
   constructor(props) {
     super(props);
     let plan = Object.assign({}, props.plans[props.route.params.id]);
+    let version = (plan.version) ? plan.version : props.settings.version;
     let versionItems = bibleTranslations.map(function(a, index) {
-          if (a.language === plan.version.language) return <MenuItem key={index} value={a.code} primaryText={a.name} />;
+          if (a.language === version.language) return <MenuItem key={index} value={a.code} primaryText={a.name} />;
         });
     let startBookId = bookIdFromChapterId(plan.startChapter);
     let startChapterId = chapterNumFromChapterId(plan.startChapter);
@@ -50,11 +51,10 @@ class PlansEditPage extends React.Component {
           return <MenuItem key={index+1} value={index+1} primaryText={index+1} />;
         }),
       finishDate: this.setFinishDate(true, startBookId, startChapterId, endBookId, endChapterId, plan.pace), 
-      version: plan.version,
+      version: version,
       versionItems: versionItems 
     };
   }
-
 
   componentDidMount() {
 
@@ -103,11 +103,11 @@ class PlansEditPage extends React.Component {
   }
 
   setFinishDate = (initial, startBook = null, startChapter = null, endBook = null, endChapter = null, pace = null) => {
-    startBook = startBook || this.state.startBook;
-    startChapter = startChapter || this.state.startChapter;
-    endBook = endBook || this.state.endBook;
-    endChapter = endChapter || this.state.endChapter;
-    pace = pace || this.state.plan.pace;
+    startBook = (!this.state) ? startBook : this.state.startBook;
+    startChapter = (!this.state) ? startChapter : this.state.startChapter;
+    endBook = (!this.state) ? endBook : this.state.endBook;
+    endChapter = (!this.state) ? endChapter : this.state.endChapter;
+    pace = (!this.state) ? pace : this.state.plan.pace;
     let finishDate = null;
     finishDate = 
       new Date().getTime() + 
@@ -181,6 +181,7 @@ class PlansEditPage extends React.Component {
   }
 
   render() {
+    let isDefault = (this.props.plan.version) ? '' : ' (Default)';
     return (
       <Layout className={s.content}>
         <h3>Edit Plan</h3>
@@ -192,7 +193,7 @@ class PlansEditPage extends React.Component {
             floatingLabelText="Name"
           /><br />
           <SelectField
-            floatingLabelText="Language to Read"
+            floatingLabelText={'Language to Read'+isDefault}
             value={this.state.version.language}
             onChange={this.handleLanguage}
             maxHeight={250}
@@ -200,7 +201,7 @@ class PlansEditPage extends React.Component {
             {languageItems}
           </SelectField> <br />
           <SelectField
-            floatingLabelText="Version to Read"
+            floatingLabelText={'Version to Read'+isDefault}
             value={this.state.version.code}
             onChange={this.handleVersion}
             maxHeight={250}
@@ -297,7 +298,8 @@ const styles = {
 
 const mapStateToProps = function(store) {
   return {
-    plans: store.plans
+    plans: store.plans,
+    settings: store.settings
   };
 }
 

@@ -152,6 +152,7 @@ exports.bibleTranslations = [
 	{ language: 'English', name: 'King James Version', code: 'kjv'},
 	{ language: 'English', name: 'KJV Easy Read', code: 'akjv'},
 	{ language: 'English', name: 'New American Standard', code: 'nasb'},
+    { language: 'English', name: 'Recovery Version', code: 'rcv'},
 	{ language: 'English', name: 'Young\'s Literal Translation', code: 'ylt'},
 	{ language: 'English', name: 'World English Bible', code: 'web'},
 	{ language: 'English', name: 'Webster\'s Bible', code: 'wb'},
@@ -215,7 +216,7 @@ exports.bookIdFromChapterId = function(chapterId) {
     var chapters = 0;
     for (var i = 0; i < exports.books.length; i++) {
         chapters += exports.books[i].chapters.length;
-        if (chapterId < chapters) return i;
+        if (chapterId <= chapters) return i;
     }
     return null;
 };
@@ -224,7 +225,7 @@ exports.chapterNumFromChapterId = function(chapterId) {
     var chapters = 0;
     for (var i = 0; i < exports.books.length; i++) {
         chapters += exports.books[i].chapters.length;
-        if (chapterId < chapters) return exports.books[i].chapters.length - (chapters - chapterId);
+        if (chapterId <= chapters) return exports.books[i].chapters.length - (chapters - chapterId);
     }
     return null;
 };
@@ -243,3 +244,20 @@ exports.chapterIdFromBookNumAndChapterNum = function(bookNum, chapterNum) {
 	}
 };
 
+exports.verseChunksFromChapterId = function(chapterId) {
+    let chapterString = exports.chapterNameFromId(chapterId);
+    let verses = exports.books[exports.bookIdFromChapterId(chapterId)].chapters[exports.chapterNumFromChapterId(chapterId) - 1];
+    let result = [];
+    // push chunks of 30 verses onto the array
+    for (let i=1; i <= Math.floor(verses/30); i++){
+        result.push(chapterString + ':' + ((i-1)*30+1) + '-' + (i * 30));
+    }   
+
+    // take care of the chunk less than 30
+    if (verses % 30 > 0) {
+        let counter = Math.floor(verses/30) * 30;
+        result.push(chapterString + ':' + (counter + 1) + '-' + (counter + verses % 30));
+    }
+
+    return result;
+};

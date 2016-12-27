@@ -15,7 +15,7 @@ class Verse extends React.Component {
 
   render() {
     if (!this.props.verse) return null;
-    return <div key={this.props.verse.verse_nr}><sup>{this.props.verse.verse_nr}</sup> {this.props.verse.verse}</div>;
+    return <div key={this.props.verse.ref} dangerouslySetInnerHTML={{__html: `<sup>${this.props.verse.ref}</sup> ${this.props.verse.text}`}} />;
   }
 
 }

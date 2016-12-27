@@ -38,10 +38,7 @@ exports.incrementPlan = function(plans, currentPlanId) {
     });
     
     // if all plans have been completed today
-    if (incompletePlan === null) {
-      // reset currentPlanId to the beginning
-      newCurrentPlanId = Object.keys(plans)[0];              
-    } else { //  otherwise, read the next unread plan 
+    if (incompletePlan !== null) {
       newCurrentPlanId = incompletePlan;
     }  
   }

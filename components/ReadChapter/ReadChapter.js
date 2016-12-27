@@ -14,7 +14,7 @@ import s from './ReadChapter.css';
 import store from '../../core/store';
 
 import Verse from './Verse';
-import {chapterNameFromId} from '../../core/bibleRef';
+import {chapterNameFromId, verseChunksFromChapterId} from '../../core/bibleRef';
 
 import Badge from 'material-ui/Badge';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
@@ -30,7 +30,8 @@ class ReadChapter extends React.Component {
   }
 
   componentDidMount() {
-    this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(this.props.plan.cursor))}&v=${(this.props.plan.version) ? this.props.plan.version.code : this.props.versionCode}`);
+    let version = (this.props.plan.version) ? this.props.plan.version : this.props.version;
+    this.httpGetAsync(this.props.plan.cursor, version);
   }
 
   componentDidUpdate() {
@@ -38,33 +39,91 @@ class ReadChapter extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps && this.props && nextProps.plan.cursor !== this.props.plan.cursor)
-      this.httpGetAsync(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(nextProps.plan.cursor))}&v=${(nextProps.plan.version) ? nextProps.plan.version.code : this.props.versionCode}`);
+    if (nextProps && this.props && nextProps.plan.cursor !== this.props.plan.cursor) {
+      let version = (nextProps.plan.version) ? nextProps.plan.version : this.props.version;
+      this.httpGetAsync(nextProps.plan.cursor, version); 
+    }
   }
 
-  httpGetAsync(theUrl)
-  {
+  httpGetAsync = (chapterId, version) => {
     store.dispatch({
       type: 'TOGGLE_ISLOADING',
       isLoading: true
     });
-    fetchJsonp(theUrl)
-      .then((response) => {
-        return response.json()
-      }).then((json) => {
-        store.dispatch({
-            type: 'TOGGLE_ISLOADING',
-            isLoading: false,
-            verses: json.chapter
-        });
-        return;
-      }).catch((ex) => {
+    if (version.code === 'rcv') {
+      var calls = [];
+      let chunks = verseChunksFromChapterId(chapterId);
+      for(var i =0; i < chunks.length; i++) {
+        calls.push(this.httpChunkCall(chunks[i]));
+      }
+      Promise.all(calls)
+      .then(function (result) {
+            //combine all verses into one array
+
+          var combined = {};
+          combined.verses = [];
+          combined.inputstring = result[0].inputstring.split(':')[0];
+          for (var i = 0; i < result.length; i++) {
+            combined.verses = combined.verses.concat(result[i].verses);
+          }
+          
+            // replace chars for HTML output
+          for (i = 0; i < combined.verses.length; i++) {
+            combined.verses[i].text = combined.verses[i].text.split('[').join('<i>');
+            combined.verses[i].text = combined.verses[i].text.split(']').join('</i>');
+            combined.verses[i].text = combined.verses[i].text.split('--').join('&mdash;');
+            combined.verses[i].ref = combined.verses[i].ref.split(':')[1];
+          }
+          
+          combined.copyright = result[0].copyright;
+          store.dispatch({
+              type: 'TOGGLE_ISLOADING',
+              isLoading: false,
+              chapter: combined
+          });
+      })
+      .catch((ex) => {
         store.dispatch({
             type: 'TOGGLE_ISLOADING',
             isLoading: false,
             errorMsg: 'Error: ' + ex
         });
-        return;
+      });
+    } else {
+      fetchJsonp(`https://getbible.net/json?scripture=${encodeURIComponent(chapterNameFromId(chapterId))}&v=${version.code}`)
+        .then((response) => {
+          return response.json()
+        })
+        .then((json) => {
+          let combined = {};
+          combined.verses = [];
+          combined.inputstring = json.book_name + ' ' + json.chapter_nr;
+          let language = (version.language !== 'English') ? ` [${version.language}]` : '';
+          combined.copyright = version.name + language + ' text from getbible.net';
+
+          for (var i in json.chapter) {
+            combined.verses.push({ref: json.chapter[i].verse_nr, text: json.chapter[i].verse.split('--').join('&mdash;')});
+          }
+          store.dispatch({
+              type: 'TOGGLE_ISLOADING',
+              isLoading: false,
+              chapter: combined
+          });
+        })
+        .catch((ex) => {
+          store.dispatch({
+              type: 'TOGGLE_ISLOADING',
+              isLoading: false,
+              errorMsg: 'Error: ' + ex
+          });
+        });
+    }
+  }
+
+  httpChunkCall = (chunk) => {
+    return fetch(`https://api.lsm.org/recver.php?String=${encodeURIComponent(chunk)}&Out=json`)
+      .then((response) => {
+        return response.json()
       });
   }
 
@@ -83,15 +142,17 @@ class ReadChapter extends React.Component {
       );
     }
     else if (this.props.errorMsg) {
+      let version = (this.props.plan.version) ? this.props.plan.version : this.props.version;
       return <RaisedButton 
                 label="RELOAD" 
-                onTouchTap={() => this.httpGetAsync('https://getbible.net/json?scripture='+encodeURIComponent(chapterNameFromId(this.props.plan.cursor))+'&v='+((this.props.plan.version) ? this.props.plan.version.code : this.props.versionCode))}
+                onTouchTap={() => this.httpGetAsync(this.props.plan.cursor, version)}
                 style={{marginTop: 60}} />
     }
     else return (
       <div style={{fontSize: this.props.textSize * 100 + '%'}}>
         <h2>{chapterNameFromId(this.props.plan.cursor)}</h2>
-        <div>{this.props.verses && Object.values(this.props.verses).map((v) => <Verse key={v.verse_nr} verse={v} /> )}</div>
+        {this.props.chapter && <div>{this.props.chapter.verses.map((v) => <Verse key={v.ref} verse={v} /> )}</div>}
+        {this.props.chapter && <div style={{fontSize: '60%', marginTop: 8}}>{this.props.chapter.copyright}</div>}
         <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
       </div>
     );

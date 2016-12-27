@@ -54,10 +54,10 @@ class HomePage extends React.Component {
                 plan={this.props.plans[this.props.currentPlanId]} 
                 isLoading={this.props.isLoading}
                 errorMsg={this.props.errorMsg}
-                verses={this.props.verses} 
+                chapter={this.props.chapter} 
                 nextChapterCB={this.nextChapter.bind(this)}
                 textSize={this.props.settings.textSize}
-                versionCode={this.props.settings.version.code}/>
+                version={this.props.settings.version}/>
           </div>}
           {!this.props.plans && <RaisedButton 
                                 label="CHOOSE A PLAN" 
@@ -84,7 +84,7 @@ const mapStateToProps = function(store) {
     user: store.user,
     plans: store.plans,
     isLoading: store.isLoading,
-    verses: store.verses,
+    chapter: store.chapter,
     errorMsg: store.errorMsg,
     currentPlanId: store.currentPlanId,
     settings: store.settings

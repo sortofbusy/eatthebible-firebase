@@ -26,8 +26,8 @@ const store = createStore((state, action) => {
     case 'SET_SETTINGS':
       return Object.assign({}, state, { settings: action.settings });
     case 'TOGGLE_ISLOADING':
-      if (action.errorMsg) return Object.assign({}, state, { isLoading: false, verses: {}, errorMsg: action.errorMsg });
-      else if (action.verses) return Object.assign({}, state, { isLoading: false, verses: action.verses, errorMsg: null });
+      if (action.errorMsg) return Object.assign({}, state, { isLoading: false, chapter: {}, errorMsg: action.errorMsg });
+      else if (action.chapter) return Object.assign({}, state, { isLoading: false, chapter: action.chapter, errorMsg: null });
       else return Object.assign({}, state, { isLoading: action.isLoading });
     default:
       return state;
