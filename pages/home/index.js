@@ -46,9 +46,9 @@ class HomePage extends React.Component {
 
   render() {
     return (
-      <Layout className={s.content}>
+      <Layout className={s.content} reading={true}>
         <div>
-          {this.props.plans && this.props.currentPlanId && <div>
+          {this.props.plans && this.props.currentPlanId && this.props.settings && <div>
               <PlanSelect />
               <ReadChapter 
                 plan={this.props.plans[this.props.currentPlanId]} 
@@ -56,8 +56,8 @@ class HomePage extends React.Component {
                 errorMsg={this.props.errorMsg}
                 chapter={this.props.chapter} 
                 nextChapterCB={this.nextChapter.bind(this)}
-                textSize={this.props.settings.textSize}
-                version={this.props.settings.version}/>
+                settings={this.props.settings}
+              />
           </div>}
           {!this.props.plans && <RaisedButton 
                                 label="CHOOSE A PLAN" 

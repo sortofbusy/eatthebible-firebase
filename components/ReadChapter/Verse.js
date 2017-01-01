@@ -9,15 +9,113 @@
  */
 
 import React from 'react';
-import cx from 'classnames';
+import store from '../../core/store';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import { chapterNameFromId } from '../../core/bibleRef';
+
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import {List, ListItem} from 'material-ui/List';
+import RaisedButton from 'material-ui/RaisedButton';
+import Snackbar from 'material-ui/Snackbar';
+import TextField from 'material-ui/TextField';
 
 class Verse extends React.Component {
+  state = {
+    open: false,
+    snackbar: ''
+  };
+
+  closeSnackbar = () => {
+	  this.setState({
+	    snackbar: '',
+	  });
+	};
+
+  handleOpen = () => {
+    this.setState({open: true});
+  };
+
+  handleClose = () => {
+    this.setState({open: false});
+  };
+
+  handleChange = (event, newValue) => {
+  	this.setState({note: newValue});
+  };
+
+  handleSave = () => {
+  	let timeNow = Date.now();
+  	let newNote = {
+  		chapterId: this.props.chapterId,
+  		verseId: this.props.verse.ref,
+  		note: this.state.note,
+  		timestamp: timeNow
+  	};
+
+  	let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+  	
+  	let newNoteKey = ref.child('notes').push().key;
+
+  	let updates = {};
+  	updates['notes/' + newNoteKey] = newNote;
+  	updates['notesByChapter/' + this.props.chapterId + '/' + this.props.verse.ref + '/' + newNoteKey] = newNote;
+  	ref.update(updates);
+  	this.setState({open: false, note: '', snackbar: 'Note saved'});
+  }
 
   render() {
+    const actions = [
+      <FlatButton
+        label="CANCEL"
+        primary={true}
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="SAVE"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this.handleSave}
+      />,
+    ];
+
     if (!this.props.verse) return null;
-    return <div key={this.props.verse.ref} dangerouslySetInnerHTML={{__html: `<sup>${this.props.verse.ref}</sup> ${this.props.verse.text}`}} />;
+    let supStyle = {color: this.props.muiTheme.palette.accent1Color};
+    if (this.props.notes) supStyle = {color: '#2196F3'};
+    return (
+    	<div key={this.props.verse.ref} style={{layout: 'flex'}}>
+    		<sup style={{...supStyle,...{ cursor: 'pointer'}}} onTouchTap={this.handleOpen}>{this.props.verse.ref} </sup>
+    		<span dangerouslySetInnerHTML={{__html: this.props.verse.text}} />
+    		<Dialog
+	          title={'Notes on Verse ' + this.props.verse.ref}
+	          actions={actions}
+	          modal={false}
+	          open={this.state.open}
+	          onRequestClose={this.handleClose}
+	          autoScrollBodyContent={true}
+	        >
+	        	<TextField
+        	      hintText="Enter a new note"
+        	      multiLine={true}
+        	      rows={1}
+        	      rowsMax={4}
+        	      value={this.state.note}
+        	      onChange={this.handleChange}
+        	    />
+        	    <List>
+	        		{this.props.notes && Object.keys(this.props.notes).map( (k)=> <ListItem key={k} primaryText={this.props.notes[k].note} secondaryText={ new Date(this.props.notes[k].timestamp).toLocaleDateString() } /> )}
+	        	</List>
+	        </Dialog>
+	        <Snackbar
+              open={this.state.snackbar !== ''}
+              message={this.state.snackbar}
+              autoHideDuration={4000}
+              onRequestClose={this.closeSnackbar}
+            />
+    	</div>
+    );
   }
 
 }
 
-export default Verse;
+export default muiThemeable()(Verse);

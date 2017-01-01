@@ -184,7 +184,7 @@ class PlansEditPage extends React.Component {
     let isDefault = (this.props.plan.version) ? '' : ' (Default)';
     return (
       <Layout className={s.content}>
-        <h3>Edit Plan</h3>
+        <h2>Edit Plan</h2>
         <div>
           <TextField
             id="name"
@@ -258,7 +258,7 @@ class PlansEditPage extends React.Component {
         </p>
         <Snackbar
           open={this.state.open}
-          message="Plan Updated"
+          message="Plan updated"
           autoHideDuration={3000}
           onRequestClose={this.closeSnackbar}
         />

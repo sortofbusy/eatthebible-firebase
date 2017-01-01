@@ -25,6 +25,10 @@ const store = createStore((state, action) => {
       return Object.assign({}, state, { currentPlanId: action.currentPlanId });
     case 'SET_SETTINGS':
       return Object.assign({}, state, { settings: action.settings });
+    case 'SET_NOTES':
+      return Object.assign({}, state, { notes: action.notes });
+    case 'SET_NOTESBYCHAPTER':
+      return Object.assign({}, state, { notesByChapter: action.notesByChapter });
     case 'TOGGLE_ISLOADING':
       if (action.errorMsg) return Object.assign({}, state, { isLoading: false, chapter: {}, errorMsg: action.errorMsg });
       else if (action.chapter) return Object.assign({}, state, { isLoading: false, chapter: action.chapter, errorMsg: null });

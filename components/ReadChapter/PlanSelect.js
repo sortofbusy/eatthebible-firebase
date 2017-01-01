@@ -18,6 +18,7 @@ import { dateIsToday } from '../../core/planLogic';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import Paper from 'material-ui/Paper';
+import ActionDone from 'material-ui/svg-icons/action/done';
 
 class PlanSelect extends React.Component {
 
@@ -48,9 +49,9 @@ class PlanSelect extends React.Component {
           let textColor = '#444';
           
           if (chapterCount[key] >= plan.pace) {
-            avatarColor = this.props.muiTheme.palette.accent2Color;
-            chipColor = this.props.muiTheme.palette.accent3Color;
-            textColor = '';
+            //avatarColor = this.props.muiTheme.palette.accent2Color;
+            //chipColor = this.props.muiTheme.palette.accent3Color;
+            //textColor = '';
           }
           if (key === this.props.currentPlanId) {
             avatarColor = this.props.muiTheme.palette.primary1Color;
@@ -71,6 +72,8 @@ class PlanSelect extends React.Component {
 
 const styles = {
   chip: {
+    display: 'inline-flex',
+    verticalAlign: 'middle',
     marginRight: 8,
     marginBottom: 8
   },

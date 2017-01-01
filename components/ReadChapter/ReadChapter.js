@@ -12,11 +12,11 @@ import React, { PropTypes } from 'react';
 import fetchJsonp from 'fetch-jsonp';
 import s from './ReadChapter.css';
 import store from '../../core/store';
+import { connect } from 'react-redux';
 
 import Verse from './Verse';
 import {chapterNameFromId, verseChunksFromChapterId} from '../../core/bibleRef';
 
-import Badge from 'material-ui/Badge';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -30,8 +30,7 @@ class ReadChapter extends React.Component {
   }
 
   componentDidMount() {
-    let version = (this.props.plan.version) ? this.props.plan.version : this.props.version;
-    this.httpGetAsync(this.props.plan.cursor, version);
+    this.httpGetAsync(this.props.plan.cursor, this.props.plan);
   }
 
   componentDidUpdate() {
@@ -40,12 +39,16 @@ class ReadChapter extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && this.props && nextProps.plan.cursor !== this.props.plan.cursor) {
-      let version = (nextProps.plan.version) ? nextProps.plan.version : this.props.version;
-      this.httpGetAsync(nextProps.plan.cursor, version); 
+      this.httpGetAsync(nextProps.plan.cursor, nextProps.plan); 
     }
   }
 
-  httpGetAsync = (chapterId, version) => {
+  httpGetAsync = (chapterId, plan) => {
+    let version = null;
+    if (this.props.settings) version = this.props.settings.version;
+    if (plan && plan.version) version = plan.version;
+    if (!version) version = { language: 'English', name: 'American Standard Version', code: 'asv'};
+
     store.dispatch({
       type: 'TOGGLE_ISLOADING',
       isLoading: true
@@ -127,6 +130,11 @@ class ReadChapter extends React.Component {
       });
   }
 
+  mapVerses = (v) => {
+    let notes = (this.props.notesByChapter) ? this.props.notesByChapter[v.ref] : null;
+    return <Verse key={v.ref} verse={v} chapterId={this.props.plan.cursor} notes={notes}/>
+  }
+
   render() {
     if (this.props.isLoading) {
       return (
@@ -142,22 +150,31 @@ class ReadChapter extends React.Component {
       );
     }
     else if (this.props.errorMsg) {
-      let version = (this.props.plan.version) ? this.props.plan.version : this.props.version;
       return <RaisedButton 
                 label="RELOAD" 
-                onTouchTap={() => this.httpGetAsync(this.props.plan.cursor, version)}
+                onTouchTap={() => this.httpGetAsync(this.props.plan.cursor, this.props.plan)}
                 style={{marginTop: 60}} />
     }
-    else return (
-      <div style={{fontSize: this.props.textSize * 100 + '%'}}>
-        <h2>{chapterNameFromId(this.props.plan.cursor)}</h2>
-        {this.props.chapter && <div>{this.props.chapter.verses.map((v) => <Verse key={v.ref} verse={v} /> )}</div>}
-        {this.props.chapter && <div style={{fontSize: '60%', marginTop: 8}}>{this.props.chapter.copyright}</div>}
-        <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
-      </div>
-    );
+    else {
+      let textSize = (this.props.settings) ? this.props.settings.textSize * 100 + '%' : '100%'; 
+      return (
+        <div style={{fontSize: textSize}}>
+          <h2>{chapterNameFromId(this.props.plan.cursor)}</h2>
+          {this.props.chapter && 
+            <div>{this.props.chapter.verses.map(this.mapVerses)}</div>}
+          {this.props.chapter && <div style={{fontSize: '60%', marginTop: 8}}>{this.props.chapter.copyright}</div>}
+          <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
+        </div>
+      );
+    }
   }
 
 }
 
-export default ReadChapter;
+const mapStateToProps = function(store) {
+  return {
+    notesByChapter: store.notesByChapter
+  };
+}
+
+export default connect(mapStateToProps)(ReadChapter);

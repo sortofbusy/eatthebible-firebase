@@ -31,7 +31,7 @@ class Header extends React.Component {
     if (!this.state.user) return null;
     else return (
       <div className={s.header}>
-        <img className={s.image} src={this.state.user.photoURL} height="90" width="90"/>
+        <img className={s.image} src={this.state.user.photoURL} height="60" width="60"/>
         <List>  
           <ListItem
             primaryText={this.state.user.displayName}

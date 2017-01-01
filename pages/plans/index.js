@@ -143,10 +143,15 @@ class PlansPage extends React.Component {
                 <FlatButton 
                   label="EDIT" 
                   style={{color: this.props.muiTheme.palette.accent1Color}} 
-                  icon={<ImageEdit />}
+                  //icon={<ImageEdit />}
                   onTouchTap={() => history.push({ pathname: '/plans/edit/' + id })} 
                 />
-                <FlatButton label="DELETE" style={{color: red500}} icon={<ActionDelete />} onTouchTap={() => this.startDelete(id)}/>
+                <FlatButton 
+                  label="DELETE" 
+                  style={{color: this.props.muiTheme.palette.accent1Color}} 
+                  //style={{color: red500}} 
+                  //icon={<ActionDelete />} 
+                  onTouchTap={() => this.startDelete(id)}/>
               </CardActions>
             </Card>
             <br />

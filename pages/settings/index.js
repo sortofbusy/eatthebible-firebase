@@ -95,6 +95,7 @@ class SettingsPage extends React.Component {
       code: value, 
       name: event.target.innerHTML
     });
+    this.setState({open: true});
   }
 
   handleTextSize = (event, value) => {
@@ -103,6 +104,7 @@ class SettingsPage extends React.Component {
 
   handleColorScheme = (value) => {
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/settings/colorScheme').set(value);
+    this.setState({open: true});
   }
 
   closeSnackbar = () => {
@@ -113,7 +115,7 @@ class SettingsPage extends React.Component {
     if (!this.state || !this.state.version) return <Layout />;
     else return (
       <Layout className={s.content}>
-        <h3>Settings</h3>
+        <h2>Settings</h2>
         <div>
           <SelectField
             id="version_language"
@@ -133,7 +135,7 @@ class SettingsPage extends React.Component {
           >
             {this.state.versionItems}
           </SelectField><br />
-          <p style={styles.label}><b>Color Scheme</b></p>
+          <p style={styles.label}><b>Reading Color Scheme</b></p>
           <RaisedButton style={{margin: 12}} label="Normal" onTouchTap={this.handleColorScheme.bind(this, 'normal')} />
           <RaisedButton backgroundColor={'#FBF0D9'} labelColor={'#5F4B32'} label="Sepia" onTouchTap={this.handleColorScheme.bind(this, 'sepia')} />
           <br />
@@ -148,7 +150,7 @@ class SettingsPage extends React.Component {
         </p>
         <Snackbar
           open={this.state.open}
-          message="Plan Updated"
+          message="Settings updated"
           autoHideDuration={3000}
           onRequestClose={this.closeSnackbar}
         />

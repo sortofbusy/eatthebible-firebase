@@ -22,6 +22,7 @@ import Divider from 'material-ui/Divider';
 import Drawer from 'material-ui/Drawer';
 import {List, ListItem} from 'material-ui/List';
 import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
 import ActionToday from 'material-ui/svg-icons/action/today';
 import ActionSettings from 'material-ui/svg-icons/action/settings';
 import CommunicationChat from 'material-ui/svg-icons/communication/chat';
@@ -41,6 +42,30 @@ class Layout extends React.Component {
     };
   }
 
+  componentWillMount() {
+    this.updateDimensions();
+  }
+  componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
+
+  updateDimensions = () => {
+
+    let w = window,
+        d = document,
+        documentElement = d.documentElement,
+        body = d.getElementsByTagName('body')[0],
+        width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
+        height = w.innerHeight|| documentElement.clientHeight|| body.clientHeight;
+
+    this.setState({width: width, height: height});
+  };
+
+
+
   handleToggle = () => this.setState({open: !this.state.open});
 
   render() {
@@ -49,7 +74,7 @@ class Layout extends React.Component {
     if (this.props.settings) {
       let backgroundColor = '';
       let color = '';
-      if (this.props.settings.colorScheme === 'sepia') {
+      if (this.props.settings.colorScheme === 'sepia' && this.props.reading) {
         backgroundColor = '#FBF0D9';
         color = '#5F4B32';
       }
@@ -60,14 +85,53 @@ class Layout extends React.Component {
     }
     settingsStyle['flex'] = '1';
     
+    let windowIsSmall = (drawerWidth >= (this.state.width - contentWidth - 32) / 2);
+
+    let appBarStyle = {display: 'block'};
+    if (!windowIsSmall) appBarStyle = {display: 'none'};
+
     return (
       <div style={settingsStyle}>
-        <AppBar
-          title={<span style={{cursor: 'pointer'}}>Eat the Bible</span>}
-          onTitleTouchTap={() => history.push({ pathname: '/' })}
-          onLeftIconButtonTouchTap={this.handleToggle}
-        />
+        {!firebase.auth().currentUser && 
+          <AppBar
+            title={'Eat the Bible'}
+            iconStyleLeft={{display: 'none'}}
+          />
+        }
         {firebase.auth().currentUser && 
+          <AppBar
+            title={<span style={{cursor: 'pointer'}}>Eat the Bible</span>}
+            onTitleTouchTap={() => history.push({ pathname: '/' })}
+            iconStyleLeft={appBarStyle}
+            onLeftIconButtonTouchTap={this.handleToggle}
+          />
+        }
+        {firebase.auth().currentUser && !windowIsSmall && //content width plus drawer width
+          <Paper
+            style={{position: 'absolute', x: 16, y: 16, width: drawerWidth}}
+          >
+            <Header/>
+            <Divider />
+            <List>
+              <ListItem
+                leftIcon={<ActionToday/>}
+                primaryText="Plans"
+                onTouchTap={() => history.push({ pathname: '/plans' })}
+              />
+              <ListItem
+                leftIcon={<CommunicationChat/>}
+                primaryText="Notes"
+                onTouchTap={() => history.push({ pathname: '/notes' })}
+              />
+              <ListItem
+                leftIcon={<ActionSettings/>}
+                primaryText="Settings"
+                onTouchTap={() => history.push({ pathname: '/settings' })}
+              />
+            </List>
+          </Paper>
+        }
+        {firebase.auth().currentUser && windowIsSmall &&
           <Drawer
             docked={false}
             width={250}
@@ -93,12 +157,18 @@ class Layout extends React.Component {
                 onTouchTap={() => history.push({ pathname: '/settings' })}
               />
             </List>
-          </Drawer>}
-          <div children={this.props.children} className={cx(s.content, this.props.className)} />
+          </Drawer>
+        }
+          <div className={cx(s.content, this.props.className)} >
+            {this.props.children}
+          </div>
       </div>
     );
   }
 }
+
+const contentWidth = 800;
+const drawerWidth = 250;
 
 const mapStateToProps = function(store) {
   return {
