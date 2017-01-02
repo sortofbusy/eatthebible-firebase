@@ -34,6 +34,8 @@ class PlansEditPage extends React.Component {
         });
     let startBookId = bookIdFromChapterId(plan.startChapter);
     let startChapterId = chapterNumFromChapterId(plan.startChapter);
+    let cursorBookId = bookIdFromChapterId(plan.cursor);
+    let cursorChapterId = chapterNumFromChapterId(plan.cursor);
     let endBookId = bookIdFromChapterId(plan.endChapter);
     let endChapterId = chapterNumFromChapterId(plan.endChapter);
     this.state = { 
@@ -45,12 +47,17 @@ class PlansEditPage extends React.Component {
       startChapterItems: books[startBookId].chapters.map(function(a, index) {
           return <MenuItem key={index+1} value={index+1} primaryText={index+1} />;
         }),
+      cursorBook: cursorBookId,
+      cursorChapter: cursorChapterId,
+      cursorChapterItems: books[cursorBookId].chapters.map(function(a, index) {
+          return <MenuItem key={index+1} value={index+1} primaryText={index+1} />;
+        }),
       endBook: endBookId,
       endChapter: endChapterId,
       endChapterItems: books[endBookId].chapters.map(function(a, index) {
           return <MenuItem key={index+1} value={index+1} primaryText={index+1} />;
         }),
-      finishDate: this.setFinishDate(true, startBookId, startChapterId, endBookId, endChapterId, plan.pace), 
+      finishDate: this.setFinishDate(true, cursorBookId, cursorChapterId, endBookId, endChapterId, plan.pace), 
       version: version,
       versionItems: versionItems 
     };
@@ -85,6 +92,23 @@ class PlansEditPage extends React.Component {
     }, () => this.setFinishDate());
   }
 
+  handleCursorBook = (event, bookIndex, value) => {
+    let chapters = [];
+    books[bookIndex].chapters.map(function(a, index) {
+      chapters.push(<MenuItem key={index+1} value={index+1} primaryText={index+1} />)
+    });
+    this.setState({
+      cursorBook: value,
+      cursorChapterItems: chapters 
+    }, () => this.setFinishDate());
+  }
+
+  handleCursorChapter = (event, index) => {
+    this.setState({
+      cursorChapter: index+1,
+    }, () => this.setFinishDate());
+  }
+
   handleEndBook = (event, bookIndex, value) => {
     let chapters = [];
     books[bookIndex].chapters.map(function(a, index) {
@@ -102,9 +126,9 @@ class PlansEditPage extends React.Component {
     }, () => this.setFinishDate());
   }
 
-  setFinishDate = (initial, startBook = null, startChapter = null, endBook = null, endChapter = null, pace = null) => {
-    startBook = (!this.state) ? startBook : this.state.startBook;
-    startChapter = (!this.state) ? startChapter : this.state.startChapter;
+  setFinishDate = (initial, cursorBook = null, cursorChapter = null, endBook = null, endChapter = null, pace = null) => {
+    cursorBook = (!this.state) ? cursorBook : this.state.cursorBook;
+    cursorChapter = (!this.state) ? cursorChapter : this.state.cursorChapter;
     endBook = (!this.state) ? endBook : this.state.endBook;
     endChapter = (!this.state) ? endChapter : this.state.endChapter;
     pace = (!this.state) ? pace : this.state.plan.pace;
@@ -113,7 +137,7 @@ class PlansEditPage extends React.Component {
       new Date().getTime() + 
       (
         (chapterIdFromBookNumAndChapterNum(endBook, endChapter)
-        - chapterIdFromBookNumAndChapterNum(startBook, startChapter)) / pace * 86400000); 
+        - chapterIdFromBookNumAndChapterNum(cursorBook, cursorChapter)) / pace * 86400000); 
     
     finishDate = new Date(finishDate);
     var options = {
@@ -169,8 +193,8 @@ class PlansEditPage extends React.Component {
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans/' + this.props.route.params.id).update({
       name: this.state.plan.name || startReference + ' - ' + endReference,
       startChapter: chapterIdFromBookNumAndChapterNum(this.state.startBook, this.state.startChapter),
+      cursor: chapterIdFromBookNumAndChapterNum(this.state.cursorBook, this.state.cursorChapter),
       endChapter: chapterIdFromBookNumAndChapterNum(this.state.endBook, this.state.endChapter),
-      cursor: chapterIdFromName(startReference),
       version: this.state.version,
       pace: this.state.plan.pace
     });
@@ -227,6 +251,28 @@ class PlansEditPage extends React.Component {
             {(this.state.startBook !== null && this.state.startChapterItems !== null) && this.state.startChapterItems.map(function(a) { return a;})}
           </SelectField> <br />
           <SelectField
+            floatingLabelText="Current Book"
+            value={this.state.cursorBook}
+            onChange={this.handleCursorBook}
+            style={{width: 150, marginRight: 16}}
+            maxHeight={250}
+            errorText={(this.state.cursorBook > this.state.endBook || this.state.cursorBook < this.state.startBook) && "Invalid range"}
+          >
+            {bookItems.map(function(a) { return a;})}
+          </SelectField>
+          <SelectField
+            floatingLabelText="Chapter"
+            value={this.state.cursorChapter}
+            onChange={this.handleCursorChapter}
+            style={{width: 90}}
+            maxHeight={250}
+            errorText={(this.state.startChapter !== null && this.state.cursorChapter !== null && this.state.endChapter !== null &&
+              (this.state.startBook === this.state.cursorBook && this.state.startChapter > this.state.cursorChapter) ||
+              (this.state.endBook === this.state.cursorBook && this.state.endChapter < this.state.cursorChapter)) && "Invalid range"}
+          >
+            {(this.state.cursorBook !== null && this.state.cursorChapterItems !== null) && this.state.cursorChapterItems.map(function(a) { return a;})}
+          </SelectField> <br />
+          <SelectField
             floatingLabelText="Ending Book"
             value={this.state.endBook}
             onChange={this.handleEndBook}
@@ -270,7 +316,7 @@ class PlansEditPage extends React.Component {
 
 const bookItems = books.map(function(a, index) {return <MenuItem key={index} value={index} primaryText={a.name} />;});
 
-const languageItems = ['Afrikaans','Albanian','Amharic','Arabic','Chinese','Croatian','Danish','Dutch','English','Esperanto',
+const languageItems = ['Afrikaans','Albanian','Amharic','Arabic','Aramaic','Armenian','Basque','Breton','Bulgarian','Chamorro','Chinese','Croatian','Danish','Dutch','English','Esperanto',
   'Estonian','Finnish','French','German','Greek','Hebrew','Hungarian','Italian','Korean','Norwegian','Portuguese','Russian',
   'Spanish','Swahili','Swedish','Turkish','Vietnamese','Xhosa']
     .map(function(a, index) {return <MenuItem key={index} value={a} primaryText={a} />;});

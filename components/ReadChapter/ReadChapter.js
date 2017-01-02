@@ -163,7 +163,7 @@ class ReadChapter extends React.Component {
           {this.props.chapter && 
             <div>{this.props.chapter.verses.map(this.mapVerses)}</div>}
           {this.props.chapter && <div style={{fontSize: '60%', marginTop: 8}}>{this.props.chapter.copyright}</div>}
-          <RaisedButton label="NEXT CHAPTER" secondary={true} style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
+          <RaisedButton label="NEXT CHAPTER" style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
         </div>
       );
     }

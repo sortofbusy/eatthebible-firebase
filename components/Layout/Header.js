@@ -30,7 +30,7 @@ class Header extends React.Component {
   render() {
     if (!this.state.user) return null;
     else return (
-      <div className={s.header}>
+      <div style={{backgroundImage: "url('../../banner.jpg')", backgroundSize: 'cover'}} className={s.header}>
         <img className={s.image} src={this.state.user.photoURL} height="60" width="60"/>
         <List>  
           <ListItem

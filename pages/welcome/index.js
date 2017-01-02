@@ -19,7 +19,9 @@ import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 
 import RaisedButton from 'material-ui/RaisedButton';
-import BannerImg from '../../public/banner.png';
+import DeviceDevices from 'material-ui/svg-icons/device/devices';
+import ActionTranslate from 'material-ui/svg-icons/action/translate';
+import SocialPoll from 'material-ui/svg-icons/social/poll';
 
 class WelcomePage extends React.Component {
 
@@ -39,26 +41,36 @@ class WelcomePage extends React.Component {
           title={'Eat the Bible'}
           iconStyleLeft={{display: 'none'}}
         />
-        <div style={{backgroundImage: "url('../../banner.png')"}} className={s.banner}>
-          <h1>EAT THE BIBLE</h1>
-          <h2>a simple site to help you read the Bible every day</h2>
-        </div>
-        <Paper style={{padding: 16}} zDepth={2}>
-          <div className={s.firebaseUiAuth} id="firebaseui-auth-container"></div>
-        </Paper>
-        <div id="features" style={{display: 'flex', justifyContent: 'center', textAlign: 'center'}}>
-          <Paper style={featuresStyle}>
-            <h3>Flexible</h3>
-            <p>Read multiple portions of the Bible, different translations, even different languages</p><br />
-          </Paper>
-          <Paper style={featuresStyle}>
-            <h3>Customizable</h3>
-            <p>Choose from 49 Bible translations in 34 languages</p><br/>
-          </Paper>
-          <Paper style={featuresStyle}>
-            <h3>Simple</h3>
-            <p>Minimal interface for distraction-free reading</p><br/>
-          </Paper>
+        <div style={{textAlign: 'center'}}>
+          <div style={{backgroundImage: "url('../../banner.png')"}} className={s.banner}>
+            <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}} className={s.bannerSContent, s.bannerLContent}>
+              <div style={{width: 300, marginRight: 4, marginTop: 16}}>
+                <h1 style={{color: '#795548'}}>EAT THE BIBLE</h1>
+                <p className={s.hideWhenSmall}>Daily Bible reading made simple</p>
+              </div>
+              <Paper style={{padding: 16, width: 300, height: 214, marginLeft: 4, marginBottom: 16}} zDepth={1}>
+                <div className={s.firebaseUiAuth} id="firebaseui-auth-container"></div>
+              </Paper>  
+            </div>
+          </div>
+          
+          <div id="features" style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', textAlign: 'center'}}>
+            <Paper style={featuresStyle}>
+              <DeviceDevices style={iconStyle}/>
+              <h3 style={featureTitleStyle}>Simple</h3>
+              <p>Optimized for reading on your phone</p><br/>
+            </Paper>
+            <Paper style={featuresStyle}>
+              <ActionTranslate style={iconStyle}/>
+              <h3 style={featureTitleStyle}>Customizable</h3>
+              <p>Choose from 49 Bible translations in 34 languages</p><br/>
+            </Paper>
+            <Paper style={featuresStyle}>
+              <SocialPoll style={iconStyle}/>
+              <h3 style={featureTitleStyle}>Flexible</h3>
+              <p>Set simultaneous reading plans and track your progress</p><br />
+            </Paper>
+          </div>
         </div>
       </div>
     );
@@ -68,12 +80,23 @@ class WelcomePage extends React.Component {
 }
 
 const featuresStyle = {
-  height: 200,
-  width: 200,
+  height: 220,
+  width: 250,
   margin: 16,
   marginTop: 32,
-  padding: 8,
+  padding: 12,
+  paddingTop: 32,
   textAlign: 'center'
 };
+
+const iconStyle = {
+  width: 50, 
+  height: 50, 
+  color: '#795548'
+}
+
+const featureTitleStyle = {
+
+}
 
 export default WelcomePage;

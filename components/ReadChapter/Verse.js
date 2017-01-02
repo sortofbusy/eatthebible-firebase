@@ -48,7 +48,7 @@ class Verse extends React.Component {
   	let timeNow = Date.now();
   	let newNote = {
   		chapterId: this.props.chapterId,
-  		verseId: this.props.verse.ref,
+  		verse: this.props.verse,
   		note: this.state.note,
   		timestamp: timeNow
   	};
@@ -80,7 +80,7 @@ class Verse extends React.Component {
     ];
 
     if (!this.props.verse) return null;
-    let supStyle = {color: this.props.muiTheme.palette.accent1Color};
+    let supStyle = {color: this.props.muiTheme.palette.accent2Color};
     if (this.props.notes) supStyle = {color: '#2196F3'};
     return (
     	<div key={this.props.verse.ref} style={{layout: 'flex'}}>
@@ -92,7 +92,7 @@ class Verse extends React.Component {
 	          modal={false}
 	          open={this.state.open}
 	          onRequestClose={this.handleClose}
-	          autoScrollBodyContent={true}
+	          autoScrollBodyContent={(this.props.notes !== null)}
 	        >
 	        	<TextField
         	      hintText="Enter a new note"

@@ -23,6 +23,10 @@
   margin-bottom: 0px;
 }
 
+.withBackground {
+  background: url('../../public/banner.jpg') right no-repeat;
+}
+
 @media screen and (max-width: 1024px) {
 
   .header {

@@ -12,20 +12,39 @@
 	background: url('../../public/banner.png') right no-repeat;
 	height: 400px;
 	text-align: center;
-	color: #FFFFFF;
-	font-size: 160%;
-	text-shadow: 3px 3px #BDBDBD;
+	/*color: #FFFFFF;*/
+	font-size: 138%;
+	/*text-shadow: 3px 3px #BDBDBD;*/
 }
 
 .banner h1 {
 	margin-top: 0px;
-	padding-top: 120px;
 }
 
 @media screen and (max-width: 1024px) {
 
   .content {
     padding: 0 16px;
+  }
+
+}
+
+@media screen and (min-width: 625px) {
+
+  .bannerLContent {
+    padding-top: 93px;
+  }
+
+}
+
+@media screen and (max-width: 624px) {
+
+  .bannerSContent {
+    padding-top: 32px;
+  }
+
+  .hideWhenSmall {
+  	display: none;
   }
 
 }

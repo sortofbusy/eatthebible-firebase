@@ -16,6 +16,7 @@ import store from '../../core/store';
 import history from '../../core/history';
 import { chapterNameFromId } from '../../core/bibleRef';
 
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
@@ -43,27 +44,32 @@ class NotesPage extends React.Component {
   }
 
   buildNoteDetails = (note) => {
-    return chapterNameFromId(note.chapterId) + ':' + note.verseId + ', ' + new Date(note.timestamp).toLocaleDateString();
+    return chapterNameFromId(note.chapterId) + ':' + note.verse.ref + ', ' + new Date(note.timestamp).toLocaleDateString();
+  };
+
+  closeSnackbar = () => {
+    this.setState({snackbar: ''});
   };
 
   startDelete = (key) => {
     this.setState({deleteDialogOpen: true, toDelete: key});
   };
 
-  handleDeleteDialog = (ignore, doIt = false) => {
-    if (doIt) {
-      let chapter = this.props.notes[this.state.toDelete].chapterId;
-      let verse = this.props.notes[this.state.toDelete].verseId;
-      
-      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notes/' + this.state.toDelete).remove();
-      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notesByChapter/' + '/' + chapter + '/' + verse + '/' + this.state.toDelete).remove(); 
-      
-      this.setState({
-        snackbar: 'Note deleted',
-        deleteDialogOpen: false
-      });
-    } else 
-      this.setState({deleteDialogOpen: false});
+  handleDeleteCancel = () => {
+    this.setState({deleteDialogOpen: false});
+  };
+
+  handleDeleteSuccess = () => {
+    let chapter = this.props.notes[this.state.toDelete].chapterId;
+    let verse = this.props.notes[this.state.toDelete].verse.ref;
+    
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notes/' + this.state.toDelete).remove();
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notesByChapter/' + '/' + chapter + '/' + verse + '/' + this.state.toDelete).remove(); 
+    
+    this.setState({
+      snackbar: 'Note deleted',
+      deleteDialogOpen: false
+    });
   };
 
   startEdit = (key) => {
@@ -76,7 +82,7 @@ class NotesPage extends React.Component {
 
   handleEditSuccess = () => {
     let chapter = this.props.notes[this.state.toEdit].chapterId;
-    let verse = this.props.notes[this.state.toEdit].verseId;
+    let verse = this.props.notes[this.state.toEdit].verse.ref;
    
     let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
     let updates = {};
@@ -98,36 +104,42 @@ class NotesPage extends React.Component {
     return (
       <Layout className={s.content}>
         <h2>Notes</h2>
-        <List>
+        
           {this.props.notes && Object.keys(this.props.notes).map( (k) => { 
             let note = this.props.notes[k];
-              return <ListItem 
-                key={k}
-                primaryText={note.note} 
-                secondaryText={this.buildNoteDetails(note)} 
-                rightIconButton={<IconMenu
-                              iconButtonElement={<IconButton><NavigationMore /></IconButton>}
-                              anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                              targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                            >
-                              <MenuItem primaryText="Edit" onTouchTap={this.startEdit.bind(this, k)}/>
-                              <MenuItem primaryText="Delete" onTouchTap={this.startDelete.bind(this, k)}/>
-                            </IconMenu>} /> 
+              return (
+                <Card key={k} style={{marginBottom: 8}}> 
+                  <CardHeader
+                    title={note.note} 
+                    subtitle={this.buildNoteDetails(note)} 
+                    actAsExpander={true}
+                    showExpandableButton={true}
+                  />
+                  <CardText expandable={true}>
+                    <b>{chapterNameFromId(note.chapterId) + ':' + note.verse.ref}</b><br />
+                    {note.verse.text}
+                    <CardActions>
+                      <FlatButton label="Edit" onTouchTap={this.startEdit.bind(this, k)}/>
+                      <FlatButton label="Delete" onTouchTap={this.startDelete.bind(this, k)}/>
+                    </CardActions>
+                  </CardText>
+                </Card>
+              ); 
             })
           }
-        </List>
+        
         <Dialog
-          actions={[<FlatButton label="CANCEL" secondary={true} onTouchTap={this.handleDeleteDialog.bind(false)}/>,
-            <FlatButton label="DELETE" primary={true} onTouchTap={this.handleDeleteDialog.bind(true)}/>]}
+          actions={[<FlatButton label="CANCEL" primary={true} onTouchTap={this.handleDeleteCancel}/>,
+            <FlatButton label="DELETE" primary={true} onTouchTap={this.handleDeleteSuccess}/>]}
           modal={false}
           open={this.state.deleteDialogOpen}
-          onRequestClose={this.handleDeleteDialog.bind(false)}
+          onRequestClose={this.handleDeleteCancel}
         >
           Delete this note permanently?
         </Dialog> 
         <Dialog
           title="Edit Note"
-          actions={[<FlatButton label="CANCEL" secondary={true} onTouchTap={this.handleEditCancel}/>,
+          actions={[<FlatButton label="CANCEL" primary={true} onTouchTap={this.handleEditCancel}/>,
             <FlatButton label="SAVE CHANGES" primary={true} onTouchTap={this.handleEditSuccess}/>]}
           modal={false}
           open={this.state.editDialogOpen}
