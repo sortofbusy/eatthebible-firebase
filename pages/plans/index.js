@@ -112,6 +112,13 @@ class PlansPage extends React.Component {
     return finishDate;
   }
 
+  startReading = (id) => {
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+      currentPlanId: id
+    });
+    history.push({pathname: '/'});
+  };
+
   closeSnackbar = () => {
     this.setState({snackbarOpen: false, snackbarMessage: ''});
   }
@@ -132,7 +139,7 @@ class PlansPage extends React.Component {
                 <ListItem
                   primaryText={<span>Next chapter: {chapterNameFromId(this.props.plans[id].cursor)}</span>}
                   leftIcon={<ContentForward />}
-                  onTouchTap={ (e) => {e.preventDefault(); history.push({ pathname: '/' });} }
+                  onTouchTap={ (e) => {e.preventDefault(); this.startReading(id);} }
                 />
                 {this.props.plans[id].version && <ListItem 
                   primaryText={this.showVersion(id)}

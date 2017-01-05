@@ -174,6 +174,8 @@ class ReadChapter extends React.Component {
 
 
   render() {
+    let editColor = (this.state.viewEdit) ? '#424242' : '#9E9E9E';
+    let plansColor = (this.state.viewPlans) ? '#424242' : '#9E9E9E';
     if (this.props.isLoading) {
       return (
         <div id='readChapter' style={{textAlign: 'center'}}>
@@ -188,21 +190,26 @@ class ReadChapter extends React.Component {
       );
     }
     else if (this.props.errorMsg) {
+      console.log()
       return (
         <div id='readChapter'>
+          {this.state.viewPlans && <PlanSelect />}
           <RaisedButton 
             label="RELOAD" 
             onTouchTap={() => this.httpGetAsync(this.props.plan.cursor, this.props.plan)}
             style={{marginTop: 60}} 
           />
+          <span style={{float: 'right', paddingRight: 8, marginTop: 60}}>
+            <ActionToday 
+              style={{color: plansColor, cursor: 'pointer'}}
+              onTouchTap={this.togglePlans}/>
+          </span>
         </div>
       );
     }
     else {
       let textSize = (this.props.settings) ? this.props.settings.textSize * 100 + '%' : '100%'; 
       let contentStyle = (this.state.height) ? {height: 350, overflowY: 'scroll', fontSize: textSize, textAlign: 'justify'} : {fontSize: textSize, textAlign: 'justify'};
-      let editColor = (this.state.viewEdit) ? '#424242' : '#9E9E9E';
-      let plansColor = (this.state.viewPlans) ? '#424242' : '#9E9E9E';
       return (
         <div>
           {this.state.viewPlans && <PlanSelect />}
