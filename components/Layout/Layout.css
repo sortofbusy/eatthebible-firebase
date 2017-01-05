@@ -9,9 +9,22 @@
  */
 
 .content {
-  margin: 0 auto;
+  margin: 0px auto;
   max-width: 800px;
   /*overflow-wrap: break-word;*/
   min-height: 600px;
-  padding-bottom: 32px;
+  /*padding-bottom: 32px;*/
+}
+
+.appbarContent {
+	margin-top: 15px;
+	color: #FFFFFF;
+}
+
+@media screen and (max-width: 624px) {
+
+  .hideWhenSmall {
+  	display: none;
+  }
+
 }

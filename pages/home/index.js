@@ -11,7 +11,6 @@
 import React, { PropTypes } from 'react';
 import Layout from '../../components/Layout';
 import ReadChapter from '../../components/ReadChapter';
-import PlanSelect from '../../components/ReadChapter/PlanSelect';
 import s from './styles.css';
 import { title, html } from './index.md';
 import { connect } from 'react-redux';
@@ -26,9 +25,15 @@ class HomePage extends React.Component {
 
   constructor(props) {
     super(props);
-    
+    let redirecting = false;
+    if (!firebase.auth().currentUser) {
+      history.push({ pathname: '/welcome' });
+      redirecting = true;
+    }
+
     this.state = {
-      open: false
+      open: false,
+      redirecting: redirecting
     }
   }
 
@@ -45,11 +50,11 @@ class HomePage extends React.Component {
   }
 
   render() {
-    return (
+    if (this.state.redirecting) return null;
+    else return (
       <Layout className={s.content} reading={true}>
         <div>
           {this.props.plans && this.props.currentPlanId && this.props.settings && <div>
-              <PlanSelect />
               <ReadChapter 
                 plan={this.props.plans[this.props.currentPlanId]} 
                 isLoading={this.props.isLoading}

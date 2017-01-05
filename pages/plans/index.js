@@ -132,6 +132,7 @@ class PlansPage extends React.Component {
                 <ListItem
                   primaryText={<span>Next chapter: {chapterNameFromId(this.props.plans[id].cursor)}</span>}
                   leftIcon={<ContentForward />}
+                  onTouchTap={ (e) => {e.preventDefault(); history.push({ pathname: '/' });} }
                 />
                 {this.props.plans[id].version && <ListItem 
                   primaryText={this.showVersion(id)}

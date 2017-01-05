@@ -19,6 +19,7 @@ import {List, ListItem} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
 import TextField from 'material-ui/TextField';
+import EditorEdit from 'material-ui/svg-icons/editor/mode-edit';
 
 class Verse extends React.Component {
   state = {
@@ -80,19 +81,21 @@ class Verse extends React.Component {
     ];
 
     if (!this.props.verse) return null;
-    let supStyle = {color: this.props.muiTheme.palette.accent2Color};
-    if (this.props.notes) supStyle = {color: '#2196F3'};
+    let editStyle = {color: this.props.muiTheme.palette.accent2Color};
+    if (this.props.notes) editStyle = {color: '#2196F3'};
     return (
     	<div key={this.props.verse.ref} style={{layout: 'flex'}}>
-    		<sup style={{...supStyle,...{ cursor: 'pointer'}}} onTouchTap={this.handleOpen}>{this.props.verse.ref} </sup>
+    		<sup>{this.props.verse.ref} </sup>
     		<span dangerouslySetInnerHTML={{__html: this.props.verse.text}} />
-    		<Dialog
+        {this.props.editMode && <EditorEdit style={{...editStyle,...{ cursor: 'pointer'}}} onTouchTap={this.handleOpen} />}
+    		{this.props.editMode && 
+          <Dialog
 	          title={'Notes on Verse ' + this.props.verse.ref}
 	          actions={actions}
 	          modal={false}
 	          open={this.state.open}
 	          onRequestClose={this.handleClose}
-	          autoScrollBodyContent={(this.props.notes !== null)}
+	          autoScrollBodyContent={(typeof(this.props.notes) !== 'undefined')}
 	        >
 	        	<TextField
         	      hintText="Enter a new note"
@@ -106,12 +109,15 @@ class Verse extends React.Component {
 	        		{this.props.notes && Object.keys(this.props.notes).map( (k)=> <ListItem key={k} primaryText={this.props.notes[k].note} secondaryText={ new Date(this.props.notes[k].timestamp).toLocaleDateString() } /> )}
 	        	</List>
 	        </Dialog>
+        }
+        {this.props.editMode &&
 	        <Snackbar
               open={this.state.snackbar !== ''}
               message={this.state.snackbar}
               autoHideDuration={4000}
               onRequestClose={this.closeSnackbar}
-            />
+          />
+        }
     	</div>
     );
   }

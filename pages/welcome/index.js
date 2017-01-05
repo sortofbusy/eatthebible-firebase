@@ -22,6 +22,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import DeviceDevices from 'material-ui/svg-icons/device/devices';
 import ActionTranslate from 'material-ui/svg-icons/action/translate';
 import SocialPoll from 'material-ui/svg-icons/social/poll';
+import TitleImage from './../../public/eatthebible.png';
 
 class WelcomePage extends React.Component {
 
@@ -44,16 +45,17 @@ class WelcomePage extends React.Component {
         <div style={{textAlign: 'center'}}>
           <div style={{backgroundImage: "url('../../banner.png')"}} className={s.banner}>
             <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}} className={s.bannerSContent, s.bannerLContent}>
-              <div style={{width: 300, marginRight: 4, marginTop: 16}}>
-                <h1 style={{color: '#795548'}}>EAT THE BIBLE</h1>
-                <p className={s.hideWhenSmall}>Daily Bible reading made simple</p>
+              <div style={{width: 300, marginTop: 8}}>
+                <img src="../../eatthebible.png" width="300"/>
               </div>
-              <Paper style={{padding: 16, width: 300, height: 214, marginLeft: 4, marginBottom: 16}} zDepth={1}>
+              <Paper style={{padding: 16, width: 300, height: 224, marginBottom: 16}} zDepth={1}>
                 <div className={s.firebaseUiAuth} id="firebaseui-auth-container"></div>
               </Paper>  
             </div>
           </div>
-          
+          <div className={s.hideWhenSmall} style={{marginTop: 32}}> 
+            <h3>Daily Bible reading made simple</h3>
+          </div>
           <div id="features" style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', textAlign: 'center'}}>
             <Paper style={featuresStyle}>
               <DeviceDevices style={iconStyle}/>

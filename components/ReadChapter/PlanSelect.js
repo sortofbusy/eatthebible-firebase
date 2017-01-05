@@ -18,6 +18,7 @@ import { dateIsToday } from '../../core/planLogic';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import Paper from 'material-ui/Paper';
+import Subheader from 'material-ui/Subheader';
 import ActionDone from 'material-ui/svg-icons/action/done';
 
 class PlanSelect extends React.Component {
@@ -42,6 +43,7 @@ class PlanSelect extends React.Component {
 
     return (
       <div style={styles.wrapper}><Paper style={{...styles.paper,...{backgroundColor: this.props.backgroundColor}}}>
+        <Subheader>Plans</Subheader>
         {Object.keys(this.props.plans).map((key) => {
           let plan = this.props.plans[key];
           let avatarColor = '';
@@ -83,9 +85,9 @@ const styles = {
   paper: {
     display: 'flex',
     flexWrap: 'wrap',
-    paddingTop: 16,
+    paddingTop: 0,
     paddingRight: 8,
-    paddingLeft: 16,
+    paddingLeft: 8,
     paddingBottom: 8
   }
 };

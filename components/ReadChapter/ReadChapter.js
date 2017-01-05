@@ -14,25 +14,40 @@ import s from './ReadChapter.css';
 import store from '../../core/store';
 import { connect } from 'react-redux';
 
+import PlanSelect from './PlanSelect';
 import Verse from './Verse';
 import {chapterNameFromId, verseChunksFromChapterId} from '../../core/bibleRef';
 
+import Badge from 'material-ui/Badge';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
 import RaisedButton from 'material-ui/RaisedButton';
+import ActionToday from 'material-ui/svg-icons/action/today';
+import EditorEdit from 'material-ui/svg-icons/editor/mode-edit';
 
 class ReadChapter extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      verses: null
+      verses: null,
+      viewEdit: false,
+      viewPlans: false
     };
   }
 
+  componentWillMount() {
+    //this.updateDimensions();
+  }
+  
   componentDidMount() {
+    //window.addEventListener("resize", this.updateDimensions);
     this.httpGetAsync(this.props.plan.cursor, this.props.plan);
   }
 
+  componentWillUnmount() {
+    //window.removeEventListener("resize", this.updateDimensions);
+  }
+  
   componentDidUpdate() {
     scroll(0,0);
   }
@@ -132,13 +147,36 @@ class ReadChapter extends React.Component {
 
   mapVerses = (v) => {
     let notes = (this.props.notesByChapter) ? this.props.notesByChapter[v.ref] : null;
-    return <Verse key={v.ref} verse={v} chapterId={this.props.plan.cursor} notes={notes}/>
+    return <Verse key={v.ref} verse={v} chapterId={this.props.plan.cursor} notes={notes} editMode={this.state.viewEdit}/>
   }
+
+  toggleEdit = (e) => {
+    e.preventDefault();
+    this.setState({viewEdit: !this.state.viewEdit});
+  };
+
+  togglePlans = (e) => {
+    e.preventDefault();
+    this.setState({viewPlans: !this.state.viewPlans});
+  };
+
+  updateDimensions = () => {
+
+    let w = window,
+        d = document,
+        documentElement = d.documentElement,
+        body = d.getElementsByTagName('body')[0],
+        width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
+        height = w.innerHeight|| documentElement.clientHeight|| body.clientHeight;
+
+    this.setState({width: width, height: height});
+  };
+
 
   render() {
     if (this.props.isLoading) {
       return (
-        <div style={{textAlign: 'center'}}>
+        <div id='readChapter' style={{textAlign: 'center'}}>
           <RefreshIndicator
             size={40}
             top={60}
@@ -150,20 +188,42 @@ class ReadChapter extends React.Component {
       );
     }
     else if (this.props.errorMsg) {
-      return <RaisedButton 
-                label="RELOAD" 
-                onTouchTap={() => this.httpGetAsync(this.props.plan.cursor, this.props.plan)}
-                style={{marginTop: 60}} />
+      return (
+        <div id='readChapter'>
+          <RaisedButton 
+            label="RELOAD" 
+            onTouchTap={() => this.httpGetAsync(this.props.plan.cursor, this.props.plan)}
+            style={{marginTop: 60}} 
+          />
+        </div>
+      );
     }
     else {
       let textSize = (this.props.settings) ? this.props.settings.textSize * 100 + '%' : '100%'; 
+      let contentStyle = (this.state.height) ? {height: 350, overflowY: 'scroll', fontSize: textSize, textAlign: 'justify'} : {fontSize: textSize, textAlign: 'justify'};
+      let editColor = (this.state.viewEdit) ? '#424242' : '#9E9E9E';
+      let plansColor = (this.state.viewPlans) ? '#424242' : '#9E9E9E';
       return (
-        <div style={{fontSize: textSize}}>
-          <h2>{chapterNameFromId(this.props.plan.cursor)}</h2>
-          {this.props.chapter && 
-            <div>{this.props.chapter.verses.map(this.mapVerses)}</div>}
-          {this.props.chapter && <div style={{fontSize: '60%', marginTop: 8}}>{this.props.chapter.copyright}</div>}
-          <RaisedButton label="NEXT CHAPTER" style={{float: 'right', marginTop: 16}} onTouchTap={this.props.nextChapterCB}/>
+        <div>
+          {this.state.viewPlans && <PlanSelect />}
+          <h2>
+            {chapterNameFromId(this.props.plan.cursor)}
+            <span style={{float: 'right', paddingRight: 8}}>
+              <EditorEdit 
+                style={{color: editColor, cursor: 'pointer', marginRight: 16}}
+                onTouchTap={this.toggleEdit}/>
+              <ActionToday 
+                style={{color: plansColor, cursor: 'pointer'}}
+                onTouchTap={this.togglePlans}/>
+            </span>
+          </h2>
+          <div style={contentStyle}>
+            {this.props.chapter && 
+              <div>{this.props.chapter.verses.map(this.mapVerses)}</div>}
+            {this.props.chapter && <div style={{fontSize: '60%', marginTop: 8}}>{this.props.chapter.copyright}</div>}
+            <RaisedButton label="NEXT CHAPTER" style={{float: 'right', marginTop: 16, marginBottom: 8, marginRight: 8}} onTouchTap={this.props.nextChapterCB}/>
+            <br />
+          </div>
         </div>
       );
     }

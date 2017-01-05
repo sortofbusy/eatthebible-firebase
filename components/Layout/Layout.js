@@ -14,6 +14,7 @@ import Header from './Header';
 import Footer from '../Footer';
 import s from './Layout.css';
 import history from '../../core/history';
+import { dateIsToday } from '../../core/planLogic';
 import { connect } from 'react-redux';
 
 import AppBar from 'material-ui/AppBar';
@@ -64,6 +65,20 @@ class Layout extends React.Component {
     this.setState({width: width, height: height});
   };
 
+  chapterCount = () => {
+    let readCount = 0;
+    let paceCount = 0;
+    if (this.props.plans) {
+      let planKeys = Object.keys(this.props.plans);
+
+      for (let i = 0; i < planKeys.length; i++) {
+        if (this.props.plans[planKeys[i]].latestTimestamp && dateIsToday(this.props.plans[planKeys[i]].latestTimestamp)) readCount += this.props.plans[planKeys[i]].chaptersToday;
+        paceCount += this.props.plans[planKeys[i]].pace;
+      } 
+    }
+    return readCount + '/' + paceCount;
+  };
+
 
 
   handleToggle = () => this.setState({open: !this.state.open});
@@ -101,9 +116,13 @@ class Layout extends React.Component {
         {firebase.auth().currentUser && 
           <AppBar
             title={<span style={{cursor: 'pointer'}}>Eat the Bible</span>}
-            onTitleTouchTap={() => history.push({ pathname: '/' })}
+            onTitleTouchTap={ (e) => {e.preventDefault(); history.push({ pathname: '/' });} }
             iconStyleLeft={appBarStyle}
-            onLeftIconButtonTouchTap={this.handleToggle}
+            onLeftIconButtonTouchTap={this.handleToggle} 
+            children={<div className={s.appbarContent}>
+                {this.chapterCount()}
+                <span className={s.hideWhenSmall}> chapters today</span>
+              </div>}
           />
         }
         {firebase.auth().currentUser && !windowIsSmall && //content width plus drawer width
@@ -172,7 +191,8 @@ const drawerWidth = 250;
 
 const mapStateToProps = function(store) {
   return {
-    settings: store.settings
+    settings: store.settings,
+    plans: store.plans
   };
 }
 

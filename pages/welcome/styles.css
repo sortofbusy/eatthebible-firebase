@@ -29,7 +29,7 @@
 
 }
 
-@media screen and (min-width: 625px) {
+@media screen and (min-width: 681px) {
 
   .bannerLContent {
     padding-top: 93px;
@@ -37,7 +37,7 @@
 
 }
 
-@media screen and (max-width: 624px) {
+@media screen and (max-width: 680px) {
 
   .bannerSContent {
     padding-top: 32px;
