@@ -209,7 +209,11 @@ class ReadChapter extends React.Component {
     }
     else {
       let textSize = (this.props.settings) ? this.props.settings.textSize * 100 + '%' : '100%'; 
-      let contentStyle = (this.state.height) ? {height: 350, overflowY: 'scroll', fontSize: textSize, textAlign: 'justify'} : {fontSize: textSize, textAlign: 'justify'};
+      let contentStyle = {fontSize: textSize, fontFamily: 'serif, !important', textAlign: 'justify', lineHeight: '180%'};
+      if (this.state.height) {
+        contentStyle.height = 350;
+        contentStyle.overflowY = 'scroll';
+      }
       return (
         <div>
           {this.state.viewPlans && <PlanSelect />}

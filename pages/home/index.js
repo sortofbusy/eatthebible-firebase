@@ -19,6 +19,7 @@ import history from '../../core/history';
 import { dateIsToday, initializePlans, incrementPlan } from '../../core/planLogic';
 
 import RaisedButton from 'material-ui/RaisedButton';
+import RefreshIndicator from 'material-ui/RefreshIndicator';
 import Snackbar from 'material-ui/Snackbar';
 
 class HomePage extends React.Component {
@@ -26,19 +27,22 @@ class HomePage extends React.Component {
   constructor(props) {
     super(props);
     let redirecting = false;
-    if (!firebase.auth().currentUser) {
-      history.push({ pathname: '/welcome' });
-      redirecting = true;
-    }
 
     this.state = {
-      open: false,
-      redirecting: redirecting
+      open: false
     }
   }
 
-  componentDidMount() {
-    //initializePlans(this.props.plans, this.props.currentPlanId);
+  componentWillMount() {
+    if (this.props.auth && !firebase.auth().currentUser) {
+      history.push({ pathname: '/welcome' });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth && !firebase.auth().currentUser) {
+      history.push({ pathname: '/welcome' });
+    }
   }
 
   closeSnackbar = () => {
@@ -50,7 +54,16 @@ class HomePage extends React.Component {
   }
 
   render() {
-    if (this.state.redirecting) return null;
+    if (this.props.auth && !firebase.auth().currentUser) return (
+      <Layout className={s.content}>
+        <RefreshIndicator
+          size={40}
+          top={60}
+          left={0}
+          status="loading"
+          style={{display: 'inline-block', position: 'relative'}}
+        />
+      </Layout>);
     else return (
       <Layout className={s.content} reading={true}>
         <div>
@@ -64,7 +77,7 @@ class HomePage extends React.Component {
                 settings={this.props.settings}
               />
           </div>}
-          {!this.props.plans && <RaisedButton 
+          {this.props.auth && !this.props.plans && <RaisedButton 
                                 label="CHOOSE A PLAN" 
                                 onTouchTap={() => history.push({pathname: '/plans'})}
                                 style={{marginTop: 60}} />}
@@ -86,6 +99,7 @@ class HomePage extends React.Component {
 
 const mapStateToProps = function(store) {
   return {
+    auth: store.auth,
     user: store.user,
     plans: store.plans,
     isLoading: store.isLoading,

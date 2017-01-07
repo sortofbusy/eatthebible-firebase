@@ -21,6 +21,8 @@ const store = createStore((state, action) => {
       return Object.assign({}, state, { user: action.user });
     case 'PLANS':
       return Object.assign({}, state, { plans: action.plans });
+    case 'INIT_AUTH':
+      return Object.assign({}, state, { auth: action.auth });
     case 'SET_CURRENTPLANID':
       return Object.assign({}, state, { currentPlanId: action.currentPlanId });
     case 'SET_SETTINGS':

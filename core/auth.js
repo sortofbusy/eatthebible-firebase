@@ -55,11 +55,17 @@ exports.AuthUI = new firebaseui.auth.AuthUI(firebase.auth());
 exports.initFirebase = () => {
 
   firebase.auth().onAuthStateChanged(function(user) {
-		store.dispatch({
-		  	type: 'USER',
-		  	user: user
-		});
-    firebaseListen(user);
+		if (user) {
+      store.dispatch({
+  		  	type: 'USER',
+  		  	user: user
+  		});
+      firebaseListen(user);
+    }
+    store.dispatch({
+      type: 'INIT_AUTH',
+      auth: true
+    });
 	}, function(error) {
 		console.log(error);
 	});
