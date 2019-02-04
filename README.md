@@ -1,6 +1,6 @@
 # Eat The Bible
 
-Eat The Bible is a serverless React SPA built on Google Firebase. It's designed to help people manage a Bible reading schedule that allows you the flexibility to keep track of multiple reading plans. You could read the New Testament in Greek while reading Joshua through Isaiah in Dutch; it's up to you!
+[Eat The Bible](https://eatthebible.com) is a serverless React SPA built on Google Firebase. It's designed to help people manage a Bible reading schedule that allows you the flexibility to keep track of multiple reading plans. You could read the New Testament in Greek while reading Joshua through Isaiah in Dutch; it's up to you!
 
 ## Features 
 * Sign in with Google, Facebook, or email
