@@ -70,6 +70,7 @@ class HomePage extends React.Component {
           {this.props.plans && this.props.currentPlanId && this.props.settings && <div>
               <ReadChapter 
                 plan={this.props.plans[this.props.currentPlanId]} 
+                currentPlanId={this.props.currentPlanId}
                 isLoading={this.props.isLoading}
                 errorMsg={this.props.errorMsg}
                 chapter={this.props.chapter} 

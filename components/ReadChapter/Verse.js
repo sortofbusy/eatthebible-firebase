@@ -85,7 +85,7 @@ class Verse extends React.Component {
     if (this.props.notes) editStyle = {color: '#2196F3'};
     return (
     	<div key={this.props.verse.ref} style={{layout: 'flex'}}>
-    		<sup>{this.props.verse.ref} </sup>
+    		<sup style={{ lineHeight: 0, position: 'relative', verticalAlign: 'baseline', top: '-0.5em'}}>{this.props.verse.ref} </sup>
     		<span dangerouslySetInnerHTML={{__html: this.props.verse.text}} />
         {this.props.editMode && <EditorEdit style={{...editStyle,...{ cursor: 'pointer'}}} onTouchTap={this.handleOpen} />}
     		{this.props.editMode && 

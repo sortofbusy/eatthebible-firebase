@@ -53,7 +53,7 @@ class ReadChapter extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps && this.props && nextProps.plan.cursor !== this.props.plan.cursor) {
+    if (nextProps && this.props && (nextProps.plan.cursor !== this.props.plan.cursor || nextProps.currentPlanId !== this.props.currentPlanId)) {
       this.httpGetAsync(nextProps.plan.cursor, nextProps.plan); 
     }
   }

@@ -11,6 +11,7 @@
 import React, { PropTypes } from 'react';
 import Layout from '../../components/Layout';
 import s from './styles.css';
+import classnames from 'classnames';
 import { connect } from 'react-redux';
 import store from '../../core/store';
 import history from '../../core/history';
@@ -36,6 +37,7 @@ class WelcomePage extends React.Component {
   }
 
   render() {
+
     return (
       <div>
         <AppBar
@@ -45,8 +47,8 @@ class WelcomePage extends React.Component {
         <div style={{textAlign: 'center'}}>
           <div style={{backgroundImage: "url('../../banner.png')"}} className={s.banner}>
             <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}} className={s.bannerSContent, s.bannerLContent}>
-              <div style={{width: 300, marginTop: 8}}>
-                <img src="../../eatthebible.png" width="300"/>
+              <div style={{marginTop: 8}} className={s.bannerLImg}>
+                <img src="../../eatthebible.png" width='100%' className={s.bannerSImg}/>
               </div>
               <Paper style={{padding: 16, width: 300, height: 224, marginBottom: 16}} zDepth={1}>
                 <div className={s.firebaseUiAuth} id="firebaseui-auth-container"></div>

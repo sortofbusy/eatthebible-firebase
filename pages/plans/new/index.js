@@ -9,12 +9,13 @@
  */
 
 import React, { PropTypes } from 'react';
+import ChapterSelector from '../../../components/ChapterSelector/ChapterSelector';
 import Layout from '../../../components/Layout';
 import s from './styles.css';
 import { connect } from 'react-redux';
 import store from '../../../core/store';
 import history from '../../../core/history';
-import {bibleTranslations, books, chapterIdFromBookNumAndChapterNum, chapterIdFromName} from '../../../core/bibleRef';
+import {bibleTranslations, books, chapterIdFromBookNumAndChapterNum, chapterIdFromName, chapterNameFromId} from '../../../core/bibleRef';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -33,23 +34,15 @@ class PlansNewPage extends React.Component {
         name: '',
         pace: 1
       },
-      bookList: books.map(function(a) {return a.name;}),
-      startBook: null,
-      startChapter: null,
-      endBook: null,
-      endChapter: null,
       finishDate: null,
+      startChapter: 1,
+      endChapter: 1,
       version: { 
         language: 'English', 
         name: 'American Standard Version', 
         code: 'asv'
       }
     };
-  }
-
-
-  componentDidMount() {
-
   }
 
   handleChange = (event) => {
@@ -60,50 +53,26 @@ class PlansNewPage extends React.Component {
     });
   }
 
-  handleStartBook = (event, bookIndex, value) => {
-    let chapters = [];
-    books[bookIndex].chapters.map(function(a, index) {
-      chapters.push(<MenuItem key={index+1} value={index+1} primaryText={index+1} />)
-    });
+  startChapterCallback = (startChapter) => {
     this.setState({
-      startBook: value,
-      startChapterItems: chapters 
+      startChapter: startChapter,
     }, () => this.setFinishDate());
   }
 
-  handleStartChapter = (event, index) => {
+  endChapterCallback = (endChapter) => {
     this.setState({
-      startChapter: index+1,
-    }, () => this.setFinishDate());
-  }
-
-  handleEndBook = (event, bookIndex, value) => {
-    let chapters = [];
-    books[bookIndex].chapters.map(function(a, index) {
-      chapters.push(<MenuItem key={index+1} value={index+1} primaryText={index+1} />)
-    });
-    this.setState({
-      endBook: value,
-      endChapterItems: chapters 
-    }, () => this.setFinishDate());
-  }
-
-  handleEndChapter = (event, index) => {
-    this.setState({
-      endChapter: index+1,
+      endChapter: endChapter,
     }, () => this.setFinishDate());
   }
 
   setFinishDate = () => {
-    if(this.state.startBook === null || this.state.startChapter === null || this.state.endBook === null || this.state.endChapter === null) {
+    if(this.state.startChapter === null || this.state.endChapter === null) {
       return;
     }
     let finishDate = null;
     finishDate = 
       new Date().getTime() + 
-      (
-        (chapterIdFromBookNumAndChapterNum(this.state.endBook, this.state.endChapter)
-        - chapterIdFromBookNumAndChapterNum(this.state.startBook, this.state.startChapter)) / this.state.plan.pace * 86400000); 
+      ( (this.state.endChapter - this.state.startChapter) / this.state.plan.pace * 86400000 ); 
     
     finishDate = new Date(finishDate);
     var options = {
@@ -147,18 +116,17 @@ class PlansNewPage extends React.Component {
   }
 
   handleSubmit = () => {
-    if(this.state.startBook === null || this.state.startChapter === null || this.state.endBook === null || this.state.endChapter === null) {
+    if(this.state.startChapter === null || this.state.endChapter === null) {
       return;
     }
-
-    let startReference = books[this.state.startBook].name + ' ' + this.state.startChapter;
-    let endReference = books[this.state.endBook].name + ' ' + this.state.endChapter;
+    let startReference = chapterNameFromId(this.state.startChapter);
+    let endReference = chapterNameFromId(this.state.endChapter);
     
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/plans').push({
       name: this.state.plan.name || startReference + ' - ' + endReference,
-      startChapter: chapterIdFromBookNumAndChapterNum(this.state.startBook, this.state.startChapter),
-      endChapter: chapterIdFromBookNumAndChapterNum(this.state.endBook, this.state.endChapter),
-      cursor: chapterIdFromName(startReference),
+      startChapter: this.state.startChapter,
+      endChapter: this.state.endChapter,
+      cursor: this.state.startChapter,
       version: this.state.version,
       pace: this.state.plan.pace
     });
@@ -195,44 +163,18 @@ class PlansNewPage extends React.Component {
           >
             {this.state.versionItems || englishVersions}
           </SelectField><br />
-          <SelectField
-            floatingLabelText="Starting Book"
-            value={this.state.startBook}
-            onChange={this.handleStartBook}
-            style={{width: 150, marginRight: 16}}
-            maxHeight={250}
-          >
-            {bookItems.map(function(a) { return a;})}
-          </SelectField>
-          <SelectField
-            floatingLabelText="Chapter"
-            value={this.state.startChapter}
-            onChange={this.handleStartChapter}
-            style={{width: 90}}
-            maxHeight={250}
-          >
-            {(this.state.startBook !== null) && this.state.startChapterItems.map(function(a) { return a;})}
-          </SelectField> <br />
-          <SelectField
-            floatingLabelText="Ending Book"
-            value={this.state.endBook}
-            onChange={this.handleEndBook}
-            style={{width: 150, marginRight: 16}}
-            maxHeight={250}
-            errorText={(this.state.endBook !== null && this.state.startBook > this.state.endBook) && "Invalid range"}
-          >
-            {bookItems.map(function(a) { return a;})}
-          </SelectField>
-          <SelectField
-            floatingLabelText="Chapter"
-            value={this.state.endChapter}
-            onChange={this.handleEndChapter}
-            style={{width: 90}}
-            maxHeight={250}
-            errorText={(this.state.endChapter !== null && this.state.startBook === this.state.endBook && this.state.startChapter >= this.state.endChapter) && "Invalid range"}
-          >
-            {(this.state.endBook !== null) && this.state.endChapterItems.map(function(a) { return a;})}
-          </SelectField><br />
+          <ChapterSelector
+            label="Start"
+            chapterId={1}
+            _callback={this.startChapterCallback}
+            lessThan={this.state.endChapter}
+          />
+          <ChapterSelector
+            label="End"
+            chapterId={1}
+            _callback={this.endChapterCallback}
+            greaterThan={this.state.startChapter}
+          />
           <br />
           <p style={styles.label}><b>{this.state.plan.pace}</b> chapter(s) / day{this.state.finishDate && ", finish " + this.state.finishDate}</p>
           <div style={styles.wrapper}>

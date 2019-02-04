@@ -29,18 +29,28 @@
 
 }
 
-@media screen and (min-width: 681px) {
+@media screen and (min-width: 713px) {
 
   .bannerLContent {
     padding-top: 93px;
   }
 
+  .bannerLImg {
+    margin-right: 96px;
+    width: 300px;
+  }
 }
 
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 712px) {
 
   .bannerSContent {
     padding-top: 32px;
+  }
+
+  .bannerSImg {
+    width: 200px;
+    margin-top: 8px;
+    margin-bottom: 16px;
   }
 
   .hideWhenSmall {
